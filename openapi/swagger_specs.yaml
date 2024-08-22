@@ -5,6 +5,87 @@ info:
 paths:
 
   #------eisha------------------------
+  /users/access-token:
+    get:
+      tags:
+        - user
+      summary: Retrieve user access details
+      operationId: getUserAccessTokenDetails
+      description: |
+        This endpoint returns user access details such as name, username, email, and roles based on the provided access token.
+      responses:
+        '200':
+          description: User access details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_details:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Sharjeel
+                      username:
+                        type: string
+                        example: sharjeelnisar
+                      email:
+                        type: string
+                        format: email
+                        example: sharjeelnisar@example.com
+                      roles:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          - CUSTOMER
+                          - ADMIN
+        '401':
+          description: Unauthorized. The user is not authenticated or the token is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users/{username}:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - user
+      summary: Get User By Username
+      description: Retrieve the user if it exists and return null in other case.
+      responses:
+        '200':
+          description: A user is retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFlag'
+        '401':
+          description: Unauthorized access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /users:
     post:
       tags:
@@ -86,86 +167,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /users/{username}:
-    parameters:
-      - name: username
-        in: path
-        required: true
-        schema:
-          type: string
-    get:
-      tags:
-        - user
-      summary: Get User By Username
-      description: Retrieve the user if it exists and return null in other case.
-      responses:
-        '200':
-          description: A user is retrieved.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserFlag'
-        '401':
-          description: Unauthorized access.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /users/access-token:
-    get:
-      tags:
-        - user
-      summary: Retrieve user access details
-      operationId: getUserAccessTokenDetails
-      description: |
-        This endpoint returns user access details such as name, username, email, and roles based on the provided access token.
-      responses:
-        '200':
-          description: User access details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user_details:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                        example: Sharjeel
-                      username:
-                        type: string
-                        example: sharjeelnisar
-                      email:
-                        type: string
-                        format: email
-                        example: sharjeelnisar@example.com
-                      roles:
-                        type: array
-                        items:
-                          type: string
-                        example:
-                          - CUSTOMER
-                          - ADMIN
-        '401':
-          description: Unauthorized. The user is not authenticated or the token is invalid.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
 
   #------moiz------------------------
@@ -295,15 +296,15 @@ paths:
 
     #------Ahmad------------------------
 
-  /users/ideas/{ideaId}:
+  /users/ideas/{id}:
     patch:
       tags:
         - ideas
-      summary: Submit the idea to the vendor and Update idea status to "submitted"
+      summary: Submit the idea to the vendor and update idea status to "submitted"
       description: |
-        The idea details are submitted to the vendor's system and updates the status of a customer's idea to "submitted" in the customer database.
+        The idea details are submitted to the vendor's system and the status of the customer's idea is updated to "submitted" in the customer database.
       parameters:
-        - name: ideaId
+        - name: id
           in: path
           required: true
           schema:
@@ -311,12 +312,12 @@ paths:
             format: int64
             example: 123
           description: The unique ID of the idea to be updated
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubmitIdeaRequest'
+      # requestBody:
+      #   required: true
+      #   content:
+      #     application/json:
+      #       schema:
+      #         $ref: '#/components/schemas/SubmitIdeaRequest'
       responses:
         '200':
           description: Idea status updated and submitted successfully
@@ -330,7 +331,7 @@ paths:
                     example: SUBMITTED
                   message:
                     type: string
-                    example: Idea submitted to the vendor system.
+                    example: Idea updated successfully.
         '400':
           description: Bad request
           content:
@@ -370,7 +371,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: '#/components/schemas/NewRecipe'
       responses:
@@ -748,16 +749,19 @@ components:
         contact_number:
           type: string
           description: Contact number of the user.
-        house_number:
-          type: integer
+        house:
+          type: string
           description: House Number of the user.
-          example: 12
-        street_number:
+        street:
           type: string
           description: Street of the user.
         area:
           type: string
           description: Area of the user.
+        zip_code:
+          type: integer
+          description: Zipcode of the user.
+          example: 5400
         city:
           type: string
           description: City of the user.
@@ -775,7 +779,7 @@ components:
         is_user_created:
           type: boolean
           description: Flag that tells if user exisits in database or not.
-        is_profile_completed:
+        is_user_profile_completed:
           type: boolean
           description: Flag that tells if user profile is filled or not.
 
@@ -941,33 +945,7 @@ components:
             currency_code:
               type: string
               example: USD
-            customer_contact_number:
-              type: string
-              example: "+1234567890"
-            address:
-              type: object
-              required:
-                - house_number
-                - street_number
-                - area
-                - city
-                - country
-              properties:
-                house_number:
-                  type: integer
-                  example: 123
-                street_number:
-                  type: integer
-                  example: 456
-                area:
-                  type: string
-                  example: Area
-                city:
-                  type: string
-                  example: Lahore
-                country:
-                  type: string
-                  example: Pak
+
             order_items:
               type: array
               items:
@@ -1072,7 +1050,7 @@ components:
           type: array
           items:
             type: string
-            format: uri
+            format: binary
             example: image_url
           description: List of image URLs for the recipe.
 
@@ -1176,3 +1154,4 @@ components:
           description: List of ideas in the current page
           items:
             $ref: '#/components/schemas/IdeaResponse'
+            
