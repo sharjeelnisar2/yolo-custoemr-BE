@@ -134,8 +134,8 @@ databaseChangeLog:
                   constraints:
                     unique: true
               - column:
-                  name: idea_code
-                  type: VARCHAR(5)
+                  name: idea_id
+                  type: INT
                   constraints:
                     nullable: false
               - column:

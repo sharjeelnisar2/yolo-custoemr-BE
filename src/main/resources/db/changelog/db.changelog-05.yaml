@@ -54,10 +54,10 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             baseTableName: recipe
-            baseColumnNames: idea_code
+            baseColumnNames: idea_id
             constraintName: fk_recipe_idea_reference
             referencedTableName: idea
-            referencedColumnNames: code
+            referencedColumnNames: id
 
         - addForeignKeyConstraint:
             baseTableName: recipe_image

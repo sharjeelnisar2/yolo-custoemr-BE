@@ -98,18 +98,13 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: middle_name
-                  type: VARCHAR(16)
-                  constraints:
-                    nullable: true
-              - column:
                   name: last_name
                   type: VARCHAR(16)
                   constraints:
                     nullable: false
               - column:
                   name: contact_number
-                  type: VARCHAR(16)
+                  type: VARCHAR(13)
                   constraints:
                     nullable: false
               - column:
@@ -165,10 +160,10 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: area
-                  type: VARCHAR(16)
+                  type: VARCHAR(32)
               - column:
                   name: zip_code
-                  type: VARCHAR(6)
+                  type: VARCHAR(5)
               - column:
                   name: city
                   type: VARCHAR(32)
