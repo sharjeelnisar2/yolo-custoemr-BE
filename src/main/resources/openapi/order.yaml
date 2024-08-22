@@ -1,0 +1,561 @@
+openapi: 3.0.0
+info:
+  title: Order Management API
+  version: 1.0.0
+  description: API for updating orders.
+
+
+#------valeena------------------------
+paths:
+  /users/orders/{trackingid}:
+    parameters:
+      - in: path
+        name: trackingid
+        required: true
+        schema:
+          type: string
+        description: The tracking ID of the order to be updated
+    patch:
+      tags:
+        - orders
+      summary: Update Order
+      description: Update the details of a specific order.
+      requestBody:
+        description: Order status object to update.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_status:
+                  type: string
+                  description: The new status of the order.
+              required:
+                - order_status
+      responses:
+        '200':
+          description: Order updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order_status:
+                    type: string
+                    description: The status of the order.
+                  tracking_id:
+                    type: string
+                    description: The tracking ID of the order.
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Order updated successfully.
+        '404':
+          description: Order not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/orders/:
+    parameters:
+      - in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+        description: Page number to be viewed
+      - in: query
+        name: size
+        required: true
+        schema:
+          type: integer
+        description: Number of items per page
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+        description: Status of order
+    get:
+      tags:
+        - orders
+      summary: Get Orders
+      description: Retrieve a list of orders for a user along with the total count of all orders and active orders.
+      responses:
+        '200':
+          description: A list of orders with counts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_orders:
+                    type: integer
+                    description: The total count of all orders.
+                  active_orders:
+                    type: integer
+                    description: The count of active orders.
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: The unique identifier for the order.
+                        order_status_id:
+                          type: integer
+                          description: The status identifier of the order.
+                        user_id:
+                          type: integer
+                          description: The user who placed the order.
+                        amount:
+                          type: integer
+                          description: The total amount for the order.
+                        tracking_id:
+                          type: string
+                          description: Unique tracking identifier for the order.
+                        created_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp when the order was created.
+                        updated_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp when the order was last updated.
+                        orderItems:
+                          type: array
+                          description: List of items in the order.
+                          items:
+                            $ref: '#/components/schemas/OrderItem'
+
+
+  #------hassan------------------------
+
+
+
+  /users/ideas/recipes:
+    get:
+      tags:
+        - recipes
+      summary: Get All Recipes
+      description: Retrieve a list of all recipes, optionally filtered by idea ID.
+      parameters:
+        - name: ideaId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: The ID of the idea to filter recipes by.
+      responses:
+        '200':
+          description: A list of recipes, optionally filtered by idea ID, along with the total recipe count.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_recipes:
+                    type: integer
+                    description: The total count of recipes retrieved.
+                  recipes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recipe'
+        '400':
+          description: Invalid request parameters.
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: No recipes found for the given criteria.
+        '500':
+          description: Internal server error.
+
+  /users/ideas/recipes/{id}:
+    get:
+      tags:
+        - recipes
+      summary: Get Recipe Details by Recipe ID
+      description: Retrieve the details of a particular recipe, optionally filtered by idea code.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the recipe.
+        - name: ideaCode
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The code of the idea to filter by.
+      responses:
+        '200':
+          description: Details of the requested recipe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '400':
+          description: Invalid request parameters.
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: The recipe or idea was not found.
+        '500':
+          description: Internal server error.
+
+  /users/ideas/{code}/recipes:
+    post:
+      tags:
+        - recipes
+      summary: Create a New Recipe for an Idea
+      description: Submit a new recipe for a specific idea identified by its code.
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The code of the idea.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewRecipe'
+      responses:
+        '201':
+          description: Recipe created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating the recipe was created.
+                    example: Recipe created successfully.
+                  recipe_code:
+                    type: string
+                    description: The unique code of the newly created recipe.
+        '400':
+          description: Invalid input provided.
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: Idea not found.
+        '500':
+          description: Internal server error.
+
+
+
+  #------moiz------------------------
+
+
+  /users/ideas:
+    post:
+      tags:
+        - ideas
+      summary: Generate an idea
+      operationId: generateIdea
+      description: Generate an idea for a recipe. The idea will be saved as a draft, and `idea_status` and `idea_code` will be set by the backend.
+      requestBody:
+        description: Details of the idea to generate
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdeaRequest'
+      responses:
+        '201':
+          description: Idea successfully created.
+        '400':
+          description: Bad input parameter.
+        '401':
+          description: Unauthorized. The user is not authenticated.
+        '500':
+          description: Server error. Something went wrong on the server.
+
+    get:
+      tags:
+        - ideas
+      summary: Retrieve ideas by status and userId
+      operationId: getIdeasByStatus
+      description: Retrieve ideas based on their status (DRAFT or SUBMITTED) and userId.
+      parameters:
+        - in: query
+          name: userId
+          description: ID of the user
+          required: true
+          schema:
+            type: string
+            example: user_123
+        - in: query
+          name: status
+          description: Status of the ideas to retrieve (DRAFT or SUBMITTED)
+          required: true
+          schema:
+            type: string
+            enum: [DRAFT, SUBMITTED]
+            example: DRAFT
+      responses:
+        '200':
+          description: List of ideas matching the criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdeaResponse'
+        '400':
+          description: Bad request. Invalid query parameters.
+        '401':
+          description: Unauthorized. The user is not authenticated.
+        '404':
+          description: No ideas found for the user with the given status.
+        '500':
+          description: Server error. Something went wrong on the server.
+
+#------------------valeena------------------------
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: The error code or type.
+        message:
+          type: string
+          description: A brief message describing the error.
+        details:
+          type: string
+          description: Additional details about the error.
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the order.
+        order_status_id:
+          type: integer
+          description: The status identifier of the order.
+        user_id:
+          type: integer
+          description: The user who placed the order.
+        amount:
+          type: integer
+          description: The total amount for the order.
+        tracking_id:
+          type: string
+          description: Unique tracking identifier for the order.
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the order was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp when the order was last updated.
+
+    OrderStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the order status.
+        code:
+          type: string
+          enum: [PENDING, INPROCESS, DISPATCHED]
+          maxLength: 16
+          description: The code for the order status.
+        value:
+          type: string
+          enum: [Pending, Inprocess, Dispatched]
+          maxLength: 16
+          description: The value for the order status.
+        is_active:
+          type: boolean
+          description: Indicates if the order status is active.
+          default: true
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the order status was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp when the order status was last updated.
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the order item.
+        quantity:
+          type: integer
+          description: The quantity of the order item.
+        order_id:
+          type: integer
+          description: The identifier of the associated order.
+        recipe_id:
+          type: integer
+          description: The identifier of the associated recipe.
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the order item was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp when the order item was last updated.
+
+    #------------------hassan
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the recipe.
+        title:
+          type: string
+          description: The title of the recipe.
+        description:
+          type: string
+          description: The description of the recipe.
+        serving_size:
+          type: integer
+          description: The serving size of the recipe.
+        price:
+          type: number
+          format: double
+          description: The price of the recipe.
+        recipe_code:
+          type: string
+          description: The unique code of the recipe.
+        idea_code:
+          type: string
+          description: The code of the associated idea.
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the recipe was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp when the recipe was last updated.
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: List of image URLs associated with the recipe.
+
+    NewRecipe:
+      type: object
+      required:
+        - title
+        - description
+        - serving_size
+        - price
+        - recipe_code
+      properties:
+        title:
+          type: string
+          description: The title of the recipe.
+        description:
+          type: string
+          description: The description of the recipe.
+        serving_size:
+          type: integer
+          description: The serving size of the recipe.
+        price:
+          type: number
+          format: double
+          description: The price of the recipe.
+        recipe_code:
+          type: string
+          description: The unique code of the recipe.
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: List of image URLs associated with the recipe.
+
+    #------------------moiz ------------------------
+    IdeaRequest:
+      type: object
+      required:
+        - userId
+        - title
+        - description
+        - interests
+        - dietaryRestrictions
+      properties:
+        userId:
+          type: string
+          description: ID of the user creating the idea
+          example: user_123
+        title:
+          type: string
+          example: Spicy Vegan Tacos
+        description:
+          type: string
+          example: Tacos made with a spicy vegan twist using plant-based ingredients.
+        interests:
+          type: string
+          description: Customer's interests
+          example: mexican
+        dietaryRestrictions:
+          type: string
+          description: Customer's Dietary Restrictions
+          example: gluten-free
+
+    IdeaResponse:
+      type: object
+      properties:
+        ideaId:
+          type: string
+          description: ID of the idea
+          example: 12345
+        title:
+          type: string
+          description: Title of the idea
+          example: Spicy Vegan Tacos
+        description:
+          type: string
+          description: Description of the idea
+          example: Tacos made with a spicy vegan twist using plant-based ingredients.
+        interests:
+          type: string
+          description: Customer's interests
+          example: mexican
+        dietaryRestrictions:
+          type: string
+          description: Customer's Dietary Restrictions
+          example: gluten-free
+        idea_status:
+          type: string
+          description: Status of the idea
+          example: DRAFT
+        idea_code:
+          type: string
+          description: Code for the idea generated by the backend
+          example: ABC123
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the idea was created
+          example: '2024-08-13T14:00:00Z'
