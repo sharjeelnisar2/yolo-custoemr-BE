@@ -139,6 +139,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: currency_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
                   name: created_at
                   type: DATETIME
                   defaultValueComputed: CURRENT_TIMESTAMP

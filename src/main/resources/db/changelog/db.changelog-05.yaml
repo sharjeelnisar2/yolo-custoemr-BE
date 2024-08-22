@@ -100,3 +100,10 @@ databaseChangeLog:
               constraintName: fk_user_currency_reference
               referencedTableName: currency
               referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+              baseTableName: recipe
+              baseColumnNames: currency_id
+              constraintName: fk_recipe_currency_reference
+              referencedTableName: currency
+              referencedColumnNames: id
