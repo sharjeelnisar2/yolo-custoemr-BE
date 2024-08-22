@@ -440,8 +440,15 @@ paths:
                   data:
                     type: object
                     properties:
-                      idea:
-                        $ref: '#/components/schemas/IdeaResponse'
+                      status:
+                        type: string
+                        example: DRAFT
+                      message:
+                        type: string
+                        example: Idea created as draft successfully.
+                    required:
+                      - status
+                      - message
                   error:
                     type: object
                     additionalProperties: false
@@ -818,8 +825,13 @@ paths:
                     example: true
                   data:
                     type: object
-                    additionalProperties: false
-                    example: {}
+                    properties:
+                      message:
+                        type: string
+                        example: Recipe created successfully.
+                    required:
+                      - status
+                      - message
                   error:
                     type: object
                     additionalProperties: false
@@ -1928,50 +1940,6 @@ components:
           description: Timestamp when the idea was created
           example: '2024-08-13T14:00:00Z'
 
-    PaginatedIdeasResponse:
-      type: object
-      properties:
-        current_page:
-          type: integer
-          description: Current page number
-          example: 1
-        page_size:
-          type: integer
-          description: Number of ideas per page
-          example: 10
-        total_items:
-          type: integer
-          description: Total number of ideas
-          example: 100
-        total_pages:
-          type: integer
-          description: Total number of pages
-          example: 10
-        ideas:
-          type: array
-          description: List of ideas in the current page
-          items:
-            $ref: '#/components/schemas/IdeaResponse'
-            
-    ApiResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Indicates if the operation was successful.
-        data:
-          type: object
-          description: Contains the result data for successful operations.
-        error:
-          type: object
-          description: Contains error details for failed operations.
-          properties:
-            message:
-              type: string
-              description: A brief message describing the error.
-            details:
-              type: string
-              description: Additional details about the error.
 
     ErrorResponse:
       type: object
