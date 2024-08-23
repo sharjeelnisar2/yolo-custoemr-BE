@@ -49,12 +49,12 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: username
-                  type: VARCHAR(8)
+                  type: VARCHAR(16)
                   constraints:
                     nullable: false
               - column:
                   name: email
-                  type: VARCHAR(20)
+                  type: VARCHAR(64)
                   constraints:
                     unique: true
                     nullable: false
@@ -150,7 +150,7 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: house
-                  type: VARCHAR(4)
+                  type: VARCHAR(16)
                   constraints:
                     nullable: false
               - column:

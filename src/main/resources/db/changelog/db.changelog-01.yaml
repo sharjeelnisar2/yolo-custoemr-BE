@@ -14,13 +14,13 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: code
-                  type: ENUM('PENDING', 'INPROCESS', 'DISPATCHED')
+                  type: VARCHAR(16)
                   constraints:
                     nullable: false
                     unique: true
               - column:
                   name: value
-                  type: ENUM('Pending', 'Inprocess', 'Dispatched')
+                  type: VARCHAR(16)
                   constraints:
                     nullable: false
                     unique: true
@@ -53,13 +53,13 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: code
-                  type: ENUM('DRAFT', 'SUBMITTED')
+                  type: VARCHAR(16)
                   constraints:
                     nullable: false
                     unique: true
               - column:
                   name: value
-                  type: ENUM('Draft', 'Submitted')
+                  type: VARCHAR(16)
                   constraints:
                     nullable: false
                     unique: true
@@ -97,12 +97,12 @@ databaseChangeLog:
                     unique: true
               - column:
                   name: name
-                  type: VARCHAR(16)
+                  type: VARCHAR(32)
                   constraints:
                     unique: true
               - column:
                   name: symbol
-                  type: VARCHAR(2)
+                  type: VARCHAR(3)
                   constraints:
                     nullable: false
               - column:

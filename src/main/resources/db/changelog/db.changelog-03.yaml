@@ -14,10 +14,10 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: title
-                  type: VARCHAR(32)
+                  type: VARCHAR(64)
               - column:
                   name: description
-                  type: VARCHAR(128)
+                  type: TEXT
               - column:
                   name: code
                   type: VARCHAR(8)
@@ -55,8 +55,8 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: text
-                  type: VARCHAR(16)
+                  name: content
+                  type: VARCHAR(32)
                   constraints:
                     nullable: false
               - column:
@@ -86,8 +86,8 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: text
-                  type: VARCHAR(16)
+                  name: content
+                  type: VARCHAR(32)
                   constraints:
                     nullable: false
               - column:
@@ -118,10 +118,10 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: name
-                  type: VARCHAR(32)
+                  type: VARCHAR(64)
               - column:
                   name: description
-                  type: VARCHAR(1024)
+                  type: TEXT
               - column:
                   name: serving_size
                   type: INT

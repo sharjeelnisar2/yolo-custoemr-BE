@@ -8,10 +8,10 @@ databaseChangeLog:
             columns:
               - column:
                   name: code
-                  value: PENDING
+                  value: PLACED
               - column:
                   name: value
-                  value: Pending
+                  value: Placed
 
         - insert:
             tableName: order_status
