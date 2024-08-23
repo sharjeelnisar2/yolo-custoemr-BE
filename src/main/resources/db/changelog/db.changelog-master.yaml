@@ -1,27 +1,27 @@
 databaseChangeLog:
     - include:
-          file: db.changelog-01.yaml
+          file: db.changelog-status.yaml
           relativeToChangelogFile: true
     - include:
-        file: db.changelog-02.yaml
+        file: db.changelog-user-management.yaml
         relativeToChangelogFile: true
     - include:
-        file: db.changelog-03.yaml
+        file: db.changelog-idea-recipe.yaml
         relativeToChangelogFile: true
     - include:
-        file: db.changelog-04.yaml
+        file: db.changelog-order.yaml
         relativeToChangelogFile: true
     - include:
-          file: db.changelog-05.yaml
+          file: db.changelog-foreign_keys.yaml
           relativeToChangelogFile: true
     - include:
-          file: db.changelog-06.yaml
+          file: db.changelog-insert-order.yaml
           relativeToChangelogFile: true
     - include:
-          file: db.changelog-07.yaml
+          file: db.changelog-insert-idea-status.yaml
           relativeToChangelogFile: true
     - include:
-        file: db.changelog-08.yaml
+        file: db.changelog-role.yaml
         relativeToChangelogFile: true
 
 
