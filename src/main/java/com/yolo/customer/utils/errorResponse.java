@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class errorResponse {
+public class ErrorResponse {
     public static ResponseEntity<Object> create(HttpStatus status, String message, String errorDetails) {
         Map<String, Object> response = new HashMap<>();
-        response.put("error_message", message);
-        response.put("error_detail", errorDetails);
+        response.put("message", message);
+        response.put("details", errorDetails);
         return ResponseEntity.status(status).body(response);
     }
 }

@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-public class orderController {
+public class OrderController {
 
-    private final orderService OrderService;
+    private final OrderService OrderService;
 
-    public orderController(orderService OrderService){
+    public OrderController(OrderService OrderService){
         this.OrderService = OrderService;
     }
 

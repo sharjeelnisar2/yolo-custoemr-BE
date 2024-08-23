@@ -1,6 +1,6 @@
 package com.yolo.customer.enums;
 
-public enum orderStatus {
+public enum OrderStatus {
     PENDING,
     INPROCESS,
     DISPATCHED
