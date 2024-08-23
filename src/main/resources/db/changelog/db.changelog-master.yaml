@@ -1,6 +1,6 @@
 databaseChangeLog:
     - include:
-          file: db.changelog-01.yaml
+          file: db.changelog-enums-01.yaml
           relativeToChangelogFile: true
     - include:
         file: db.changelog-02.yaml
