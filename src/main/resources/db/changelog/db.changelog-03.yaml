@@ -55,7 +55,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: content
+                  name: description
                   type: VARCHAR(32)
                   constraints:
                     nullable: false
@@ -86,7 +86,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: content
+                  name: description
                   type: VARCHAR(32)
                   constraints:
                     nullable: false
