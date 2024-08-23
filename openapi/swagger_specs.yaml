@@ -1,248 +1,10 @@
 openapi: 3.0.0
 info:
   title: YOLO CUSTOMER API
-  version: 2.0.0
+  version: 1.0.0
 paths:
 
   #------eisha------------------------
-
-  /users:
-    post:
-      tags:
-        - user
-      summary: Create a new user
-      description: A new user will be created after receiving username.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
-      responses:
-        '201':
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      userId:
-                        type: integer
-                        format: int64
-                        example: 12345
-                      message:
-                        type: string
-                        example: User created successfully
-                    required:
-                      - userId
-                      - message
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
-        '400':
-          description: Invalid request parameters
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '401':
-          description: Unauthorized access
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-
-  /users/{username}/userProfiles:
-    post:
-      tags:
-        - user
-      summary: Create a new user profile
-      description: A new user profile will be created for the specified user.
-      parameters:
-        - name: username
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The username of the user.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserProfileRequest'
-      responses:
-        '201':
-          description: User profile created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      profileId:
-                        type: integer
-                        format: int64
-                        example: 67890
-                      message:
-                        type: string
-                        example: User profile created successfully
-                    required:
-                      - profileId
-                      - message
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
-        '400':
-          description: Invalid request parameters
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '401':
-          description: Unauthorized access
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-
   /users/jwtToken:
     get:
       tags:
@@ -259,82 +21,38 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
+                  user_details:
                     type: object
                     properties:
-                      user_details:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                            example: Sharjeel
-                          username:
-                            type: string
-                            example: sharjeelnisar
-                          email:
-                            type: string
-                            format: email
-                            example: sharjeelnisar@example.com
-                          roles:
-                            type: array
-                            items:
-                              type: string
-                            example:
-                              - CUSTOMER
-                              - ADMIN
-                    required:
-                      - user_details
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
+                      name:
+                        type: string
+                        example: Sharjeel
+                      username:
+                        type: string
+                        example: sharjeelnisar
+                      email:
+                        type: string
+                        format: email
+                        example: sharjeelnisar@example.com
+                      roles:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          - CUSTOMER
+                          - ADMIN
         '401':
           description: Unauthorized. The user is not authenticated or the token is invalid.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
 
   /users/{username}:
     parameters:
@@ -343,7 +61,6 @@ paths:
         required: true
         schema:
           type: string
-        description: The username of the user to be retrieved.
     get:
       tags:
         - user
@@ -351,110 +68,157 @@ paths:
       description: Retrieve the user if it exists and return null in other case.
       responses:
         '200':
-          description: A user is retrieved successfully.
+          description: A user is retrieved.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/UserFlag'
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/UserFlag'
         '401':
           description: Unauthorized access.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
 
-  #------moiz------------------------
-
-  /users/ideas/AIAssistant:
+  /users:
     post:
       tags:
-        - ideas
-      summary: Prompt AI to generate idea
-      operationId: pormptAI
-      description: API that will call AI Assistant API and a prompt will be passed to the AI assistant to generate an idea.
+        - user
+      summary: Create a new user.
+      description: A new user will be created after receiving username.
       requestBody:
-        description: Prompt to be passed to AI Assistant
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PromptRequest'
+              $ref: '#/components/schemas/UserRequest'
       responses:
         '201':
-          description: Prompt given to AI successfully..
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  idea:
-                    $ref: '#/components/schemas/PromptResponse'
+          description: User created successfully.
         '400':
-          description: Bad input parameter.
+          description: Invalid request parameters.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized. The user is not authenticated.
+          description: Unauthorized access.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Server error. Something went wrong on the server.
+          description: Internal server error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+
+  /users/{username}/profiles:
+    post:
+      tags:
+        - user
+      summary: Create a new user profile.
+      description: A new user profile will be created against the user.
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The username of the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+      responses:
+        '201':
+          description: User profile created successfully.
+        '400':
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The user was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    patch:
+      tags:
+        - user
+      summary: Create a new user.
+      description: A new user will be created after receiving username.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The id of the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileUpdateRequest'
+      responses:
+        '200':
+          description: User updated successfully.
+        '400':
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+  #------moiz------------------------
+
 
   /users/ideas:
     post:
@@ -478,85 +242,26 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: DRAFT
-                      message:
-                        type: string
-                        example: Idea created as draft successfully.
-                    required:
-                      - status
-                      - message
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
+                  idea:
+                    $ref: '#/components/schemas/IdeaResponse'
         '400':
           description: Bad input parameter.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized. The user is not authenticated.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Server error. Something went wrong on the server.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
 
     get:
       tags:
@@ -610,105 +315,75 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      total_ideas:
-                        type: integer
-                        description: Total number of ideas.
-                        example: 50
-                      ideas:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/IdeaResponse'
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
+                $ref: '#/components/schemas/PaginatedIdeasResponse'
         '400':
           description: Bad request. Invalid query parameters.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized. The user is not authenticated.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: No ideas found for the user with the given status.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Server error. Something went wrong on the server.
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /users/ideas/AI-Assistant:
+    post:
+      tags:
+        - ideas
+      summary: Prompt AI to generate idea
+      operationId: pormptAI
+      description: API that will call AI Assistant API and a prompt will be passed to the AI assistant to generate an idea.
+      requestBody:
+        description: Prompt to be passed to AI Assistant
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromptRequest'
+      responses:
+        '201':
+          description: Prompt given to AI successfully..
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - error
+                  idea:
+                    $ref: '#/components/schemas/PromptResponse'
+        '400':
+          description: Bad input parameter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error. Something went wrong on the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
     #------Ahmad------------------------
 
@@ -728,6 +403,12 @@ paths:
             format: int64
             example: 123
           description: The unique ID of the idea to be updated
+      # requestBody:
+      #   required: true
+      #   content:
+      #     application/json:
+      #       schema:
+      #         $ref: '#/components/schemas/SubmitIdeaRequest'
       responses:
         '200':
           description: Idea status updated and submitted successfully
@@ -736,234 +417,81 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: SUBMITTED
-                      message:
-                        type: string
-                        example: Idea updated successfully.
-                    required:
-                      - status
-                      - message
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
+                  status:
+                    type: string
+                    example: SUBMITTED
+                  message:
+                    type: string
+                    example: Idea updated successfully.
         '400':
           description: Bad request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Idea not found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-
+                $ref: '#/components/schemas/ErrorResponse'
 
 
   #------hassan------------------------
 
   /users/ideas/recipes:
+
     post:
       tags:
         - recipes
       summary: Create a New Recipe for an Idea
       description: Submit a new recipe for a specific idea identified by its code.
+
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: '#/components/schemas/NewRecipe'
       responses:
         '201':
           description: Recipe created successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Recipe created successfully.
-                    required:
-                      - status
-                      - message
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
         '400':
           description: Invalid input provided.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized access.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Idea not found.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
 
     get:
       tags:
@@ -1005,119 +533,43 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      total:
-                        type: integer
-                        description: The total number of recipes.
-                      page:
-                        type: integer
-                        description: The current page number.
-                      size:
-                        type: integer
-                        description: The number of recipes per page.
-                      recipes:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Recipe'
-                    required:
-                      - total
-                      - page
-                      - size
-                      - recipes
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
+                  total:
+                    type: integer
+                    description: The total number of recipes.
+                  page:
+                    type: integer
+                    description: The current page number.
+                  size:
+                    type: integer
+                    description: The number of recipes per page.
+                  recipes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recipe'
         '400':
           description: Invalid request parameters.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized access.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: No recipes found for the given criteria.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-
+                $ref: '#/components/schemas/ErrorResponse'
 
 
   # /users/ideas/recipes/{id}:
@@ -1171,15 +623,15 @@ paths:
   #             schema:
   #               $ref: '#/components/schemas/ErrorResponse'
 
-
   /users/orders:
+
     #------Ahmad------------------------
     post:
       tags:
         - orders
       summary: Place an order to the vendor and track it in the internal database
       description: |
-        This endpoint allows a customer to place an order with the vendor's system. Upon successful order placement, the order is also saved in the internal database for tracking order history.
+        This endpoint allows a customer to place an order to the vendor's system. Upon successful order placement, the order is also saved in the internal database for tracking order history.
       requestBody:
         required: true
         content:
@@ -1194,119 +646,61 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      orderId:
-                        type: integer
-                        format: int64
-                        example: 1234
-                      status:
-                        type: string
-                        example: PLACED
-                      message:
-                        type: string
-                        example: Order placed successfully
-                    required:
-                      - orderId
-                      - status
-                      - message
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
+                  orderId:
+                    type: integer
+                    format: int64
+                    example: 1234
+                  status:
+                    type: string
+                    example: PLACED
+                  message:
+                    type: string
+                    example: Order placed successfully
         '400':
           description: Bad request due to invalid order data
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
+
+
 
     get:
-      tags:
-        - orders
-      summary: Get Orders
-      description: Retrieve a list of orders for a user along with the total count of all orders and active orders.
       parameters:
-        - name: page
-          in: query
+        - in: query
+          name: page
           required: true
           schema:
             type: integer
           description: Page number to be viewed
-        - name: size
-          in: query
+        - in: query
+          name: size
           required: true
           schema:
             type: integer
           description: Number of items per page
-        - name: status
-          in: query
+        - in: query
+          name: status
           required: false
           schema:
             type: string
-          description: Status of the order
+          description: Status of order
+      tags:
+        - orders
+      summary: Get Orders
+      description: Retrieve a list of orders for a user along with the total count of all orders and active orders.
       responses:
         '200':
           description: A list of orders with counts.
@@ -1315,143 +709,51 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      total_orders:
-                        type: integer
-                        description: The total count of all orders.
-                      active_orders:
-                        type: integer
-                        description: The count of active orders.
-                      orders:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-                              description: The unique identifier for the order.
-                            order_status_id:
-                              type: integer
-                              description: The status identifier of the order.
-                            user_id:
-                              type: integer
-                              description: The user who placed the order.
-                            amount:
-                              type: integer
-                              description: The total amount for the order.
-                            currency_code:
-                              type: string
-                              description: Currency code for the order.
-                              example: USD
-                            order_code:
-                              type: string
-                              description: Unique tracking identifier for the order.
-                            created_at:
-                              type: string
-                              format: date-time
-                              description: The timestamp when the order was created.
-                            order_items:
-                              type: array
-                              description: List of items in the order.
-                              items:
-                                $ref: '#/components/schemas/OrderItem'
-                    required:
-                      - total_orders
-                      - active_orders
-                      - orders
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
-        '400':
-          description: Invalid request parameters.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '401':
-          description: Unauthorized access.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '404':
-          description: No orders found for the given criteria.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
-        '500':
-          description: Internal server error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                  total_orders:
+                    type: integer
+                    description: The total count of all orders.
+                  active_orders:
+                    type: string
+                    description: The count of active orders.
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: The unique identifier for the order.
+                        order_status_id:
+                          type: integer
+                          description: The status identifier of the order.
+                        user_id:
+                          type: integer
+                          description: The user who placed the order.
+                        amount:
+                          type: integer
+                          description: The total amount for the order.
+                        currency_code:
+                          type: string
+                          description: Unique tracking identifier for the order.
+                          example: USD
+                        order_code:
+                          type: string
+                          description: Unique tracking identifier for the order.
+                        created_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp when the order was created.
+                        # updated_at:
+                        #   type: string
+                        #   format: date-time
+                        #   description: The timestamp when the order was last updated.
+                        order_items:
+                          type: array
+                          description: List of items in the order.
+                          items:
+                            $ref: '#/components/schemas/OrderItem'
+
+
 
   #------valeena------------------------
   /users/orders/{order_code}:
@@ -1469,7 +771,6 @@ paths:
       description: Update the details of a specific order.
       requestBody:
         description: Order status object to update.
-        required: true
         content:
           application/json:
             schema:
@@ -1488,104 +789,31 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      order_status:
-                        type: string
-                        description: The updated status of the order.
-                      message:
-                        type: string
-                        description: Success message.
-                        example: Order updated successfully.
-                    required:
-                      - order_status
-                      - message
-                  error:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                required:
-                  - success
-                  - data
-                  - error
-        '400':
-          description: Bad request due to invalid status update.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: "Bad request."
-                      details:
-                        type: string
-                        example: "The provided order status is invalid."
-                required:
-                  - success
-                  - data
-                  - error
+                  order_status:
+                    type: string
+                    description: The status of the order.
+                  # tracking_id:
+                  #   type: string
+                  #   description: The tracking ID of the order.
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Order updated successfully.
         '404':
           description: Order not found.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: "Order not found."
-                      details:
-                        type: string
-                        example: "The order with tracking ID O1234 does not exist."
-                required:
-                  - success
-                  - data
-                  - error
-        '500':
-          description: Internal server error.
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad request.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  data:
-                    type: object
-                    additionalProperties: false
-                    example: {}
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-                required:
-                  - success
-                  - data
-                  - error
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
 
 components:
   schemas:
@@ -1636,6 +864,36 @@ components:
           description: Country of the user.
           example: USD
 
+    UserProfileUpdateRequest:
+      type: object
+      properties:
+        contact_number:
+          type: string
+          description: Contact number of the user.
+        house:
+          type: string
+          description: House Number of the user.
+        street:
+          type: string
+          description: Street of the user.
+        area:
+          type: string
+          description: Area of the user.
+        zip_code:
+          type: integer
+          description: Zipcode of the user.
+          example: 5400
+        city:
+          type: string
+          description: City of the user.
+        country:
+          type: string
+          description: Country of the user.
+        currency_code:
+          type: string
+          description: Country of the user.
+          example: USD
+
     UserFlag:
       type: object
       properties:
@@ -1647,6 +905,15 @@ components:
           description: Flag that tells if user profile is filled or not.
 
     #------------------valeena------------------------
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A brief message describing the error.
+        details:
+          type: string
+          description: Additional details about the error.
 
     Order:
       type: object
@@ -1984,16 +1251,30 @@ components:
           description: Timestamp when the idea was created
           example: '2024-08-13T14:00:00Z'
 
-
-    ErrorResponse:
+    PaginatedIdeasResponse:
       type: object
       properties:
-        message:
-          type: string
-          description: A brief message describing the error.
-        details:
-          type: string
-          description: Additional details about the error.
+        current_page:
+          type: integer
+          description: Current page number
+          example: 1
+        page_size:
+          type: integer
+          description: Number of ideas per page
+          example: 10
+        total_items:
+          type: integer
+          description: Total number of ideas
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages
+          example: 10
+        ideas:
+          type: array
+          description: List of ideas in the current page
+          items:
+            $ref: '#/components/schemas/IdeaResponse'
 
     PromptRequest:
       type: object
@@ -2008,4 +1289,6 @@ components:
           type: string
         description:
           type: string
+
+
             

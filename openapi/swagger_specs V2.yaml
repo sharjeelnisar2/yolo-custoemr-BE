@@ -411,6 +411,54 @@ paths:
                   - data
                   - error
 
+  /users/{id}:
+    patch:
+      tags:
+        - user
+      summary: Create a new user.
+      description: A new user will be created after receiving username.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The id of the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileUpdateRequest'
+      responses:
+        '200':
+          description: User updated successfully.
+        '400':
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
   #------moiz------------------------
   /users/ideas:
     post:
@@ -513,7 +561,7 @@ paths:
                 required:
                   - success
                   - error
-  
+
     get:
       tags:
         - ideas
@@ -920,7 +968,7 @@ paths:
                   - success
                   - data
                   - error
-  
+
     get:
       tags:
         - recipes
@@ -1238,7 +1286,7 @@ paths:
                   - success
                   - data
                   - error
-  
+
     get:
       tags:
         - orders
@@ -1565,6 +1613,36 @@ components:
         last_name:
           type: string
           description: Last name of the user.
+        contact_number:
+          type: string
+          description: Contact number of the user.
+        house:
+          type: string
+          description: House Number of the user.
+        street:
+          type: string
+          description: Street of the user.
+        area:
+          type: string
+          description: Area of the user.
+        zip_code:
+          type: integer
+          description: Zipcode of the user.
+          example: 5400
+        city:
+          type: string
+          description: City of the user.
+        country:
+          type: string
+          description: Country of the user.
+        currency_code:
+          type: string
+          description: Country of the user.
+          example: USD
+
+    UserProfileUpdateRequest:
+      type: object
+      properties:
         contact_number:
           type: string
           description: Contact number of the user.
