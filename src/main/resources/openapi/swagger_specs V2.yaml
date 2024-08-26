@@ -1310,6 +1310,8 @@ paths:
           required: false
           schema:
             type: string
+            enum: [ PENDING, INPROCESS, DISPATCHED ]
+            example: PENDING
           description: Status of the order
       responses:
         '200':
@@ -1348,10 +1350,6 @@ paths:
                             amount:
                               type: integer
                               description: The total amount for the order.
-                            currency_code:
-                              type: string
-                              description: Currency code for the order.
-                              example: USD
                             order_code:
                               type: string
                               description: Unique tracking identifier for the order.
@@ -1481,6 +1479,9 @@ paths:
               properties:
                 order_status:
                   type: string
+                  schema:
+                    enum: [ PENDING, INPROCESS, DISPATCHED ]
+                    example: INPROCESS
                   description: The new status of the order.
               required:
                 - order_status
