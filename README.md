@@ -47,69 +47,76 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the Repository:**
 
-    i- Navigate to the desired directory where you wish to create project
-    ii- Open windows powershell/cmd in that directory or use any code editor with embeded terminal
-    iii- run the following commands
-        For YOLO Customer APP
+    - Navigate to the desired directory where you wish to create project
+    - Open windows powershell/cmd in that directory or use any code editor with embeded terminal
+    - Run the following commands
+        - For YOLO Customer APP
             git clone https://github.com/sharjeelnisar2/yolo-custoemr-BE.git
-        For YOLO Chef APP
+        - For YOLO Chef APP
             git clone https://github.com/sharjeelnisar2/yolo-chef-BE.git
 
 2.    **Create MYSQL Database:**
 
-        Create a database for customer app and one for vendor app
+        - Create a database for customer app and one for vendor app
+          
+3.    **In root directory, create a file named: "**
+        - env.properties
+          
+3.    **Set Environment Variables in the above file:**
+        #### DB Config Variables
+        - DB_URL
+        - DB_USERNAME
+        - DB_PASSWORD
+        #### AI Key
+        - ANTHROPIC_KEY
 
-3.    **Set Environment Variables:**
-        i- DB_URL
-        ii- DB_USERNAME
-        iii- DB_PASSWORD
-
-4.    **Run Project:**
+5.    **Run Project:**
 
         You can run project using any Java code editor i.e. IntelliJ
         To run project using IntelliJ 
-        1- Add a new app configuration JDK 21, Main Class com.yolo.customer.CustomerApplication
-        2- Run file
+        - Add a new app configuration JDK 21, Main Class com.yolo.customer.CustomerApplication
+        - Run file
         
         OR 
 
         You can run project using maven 
         In order to run project using maven
-        1- mvn clean install
-        2- mvn spring-boot:run
+        - mvn clean install
+        - mvn spring-boot:run
 
-5.    **YOLO CUSTOMER FRONTEND:**
+6.    **YOLO CUSTOMER FRONTEND:**
 
-        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository
-        https://github.com/sharjeelnisar2/yolo-customer-FE
+        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository:
+        - https://github.com/sharjeelnisar2/yolo-customer-FE
 
-6.    **YOLO CHEF FRONTEND:**
+8.    **YOLO CHEF FRONTEND:**
 
-        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository
-        https://github.com/sharjeelnisar2/yolo-chef-BE
+        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository:
+        - https://github.com/sharjeelnisar2/yolo-chef-BE
 
-7.    **YOLO CHEF FRONTEND:**
+9.    **YOLO CHEF FRONTEND:**
 
-        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository
-        https://github.com/sharjeelnisar2/yolo-chef-FE
+        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository:
+        - https://github.com/sharjeelnisar2/yolo-chef-FE
+      
 ## Usage
 
-Once the application is running, you can:
-    1- Register/Login to the platform.
-    2- Create Custom Ideas manually or using the AI assistant.
-    3- Submit Ideas and View Recipes submitted by YOLO CHEF application againt your ideas.
-    4- Order Recipes directly from the platform.
+- Once the application is running, you can:
+    - Register/Login to the platform
+    - Create Custom Ideas manually or using the AI assistant
+    - Submit Ideas and View Recipes submitted by YOLO CHEF application againt your ideas
+    - Order Recipes directly from the platform
 
 ## Contributing
 
-In Order to contribute to the Project 
-    i- Fork the repository.
-    ii- Create a new branch for your feature or bugfix 
-        git checkout -b feature/your-feature-name
-    iii- Make your changes and commit them
-        git commit -m "Add some feature"
-    iv- Push to your branch
-        git push origin feature/your-feature-name
+- In Order to contribute to the Project:
+    - Fork the repository
+    - Create a new branch for your feature or bugfix 
+        - git checkout -b feature/your-feature-name
+    - Make your changes and commit them
+        - git commit -m "Add some feature"
+    - Push to your branch
+        - git push origin feature/your-feature-name
 
 ## License
 
