@@ -1295,13 +1295,13 @@ paths:
       parameters:
         - name: page
           in: query
-          required: true
+          required: false
           schema:
             type: integer
           description: Page number to be viewed
         - name: size
           in: query
-          required: true
+          required: false
           schema:
             type: integer
           description: Number of items per page
@@ -1717,12 +1717,12 @@ components:
           description: Unique identifier for the order status.
         code:
           type: string
-          enum: [PENDING, INPROCESS, DISPATCHED]
+          enum: [PLACED, INPROCESS, DISPATCHED]
           maxLength: 16
           description: The code for the order status.
         value:
           type: string
-          enum: [Pending, Inprocess, Dispatched]
+          enum: [PLACED, INPROCESS, DISPATCHED]
           maxLength: 16
           description: The value for the order status.
         is_active:
