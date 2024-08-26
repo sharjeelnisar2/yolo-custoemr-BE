@@ -1,5 +1,7 @@
 package com.yolo.customer.order.orderItem;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yolo.customer.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +15,7 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private int quantity;
