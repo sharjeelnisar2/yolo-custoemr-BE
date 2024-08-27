@@ -1,17 +1,7 @@
 package com.yolo.customer.idea;
 
-<<<<<<< Updated upstream
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-=======
 import com.yolo.customer.idea.ideaStatus.IdeaStatus;
 import jakarta.persistence.*;
->>>>>>> Stashed changes
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,25 +40,16 @@ public class Idea {
 
     @PrePersist
     protected void onCreate() {
-<<<<<<< Updated upstream
-        createdAt = updatedAt = LocalDateTime.now();
-=======
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
->>>>>>> Stashed changes
     }
 
     @PreUpdate
     protected void onUpdate() {
-<<<<<<< Updated upstream
-        updatedAt = LocalDateTime.now();
-    }
-
-}
-=======
         this.updatedAt = LocalDateTime.now();
     }
 
+    // Defensive copy of mutable internal state
     public IdeaStatus getIdeaStatus() {
         return ideaStatus != null ? new IdeaStatus(ideaStatus) : null;
     }
@@ -77,6 +58,7 @@ public class Idea {
         this.ideaStatus = ideaStatus != null ? new IdeaStatus(ideaStatus) : null;
     }
 
+    // Copy constructor
     public Idea(Idea other) {
         if (other != null) {
             this.id = other.id;
@@ -90,6 +72,6 @@ public class Idea {
         }
     }
 
+    // Default constructor
     public Idea() {}
 }
->>>>>>> Stashed changes
