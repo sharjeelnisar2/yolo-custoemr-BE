@@ -1,11 +1,11 @@
 package com.yolo.customer.user;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,5 +30,12 @@ public class UserController {
         response.put("user_details", userDetails);
 
         return response;
+    }
+
+    @PreAuthorize("hasRole('ROLE_CREATE_USER')")
+    @PostMapping
+    public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
+        userService.createUser(userRequest.getUsername(), userRequest.getEmail());
+        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
     }
 }
