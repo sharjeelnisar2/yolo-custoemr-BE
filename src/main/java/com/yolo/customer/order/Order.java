@@ -1,14 +1,10 @@
 package com.yolo.customer.order;
 
-import com.yolo.customer.order.orderItem.OrderItem;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
 @Getter
 @Setter
 @Entity(name = "orders")

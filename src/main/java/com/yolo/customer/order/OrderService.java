@@ -1,7 +1,12 @@
 package com.yolo.customer.order;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.yolo.customer.enums.OrderStatusEnum;
+import com.yolo.customer.order.orderStatus.OrderStatus;
+import com.yolo.customer.order.orderStatus.OrderStatusRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,22 +15,47 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderStatusRepository orderStatusRepository;
 
-    public OrderService(OrderRepository orderRepository){
+    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository){
         this.orderRepository=orderRepository;
+        this.orderStatusRepository=orderStatusRepository;
     }
 
-    public List<Order> findAll(Integer page, Integer size, String status){
+    public List<Order> findAll(Integer page, Integer size, String status) {
         if (page < 0) {
-            page = 0;
+            throw new IllegalArgumentException("Page index must not be less than zero.");
         }
         if (size <= 0) {
-            size = 10;
+            throw new IllegalArgumentException("Page size must be greater than zero.");
         }
         if (size > 1000) {
             size = 1000;
         }
-       // return orderRepository.findAll(PageRequest.of(page, size)).getContent();
-        return  orderRepository.findAll();
+
+        Pageable paging = PageRequest.of(page, size);
+        Page<Order> pageOrders;
+
+        if (status == null || status.isEmpty()) {
+            pageOrders = orderRepository.findAll(paging);
+        } else {
+            OrderStatusEnum orderStatusEnum;
+            try {
+                orderStatusEnum = OrderStatusEnum.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid order status: " + status);
+            }
+            System.out.println(orderStatusEnum);
+            OrderStatus statusObj = orderStatusRepository.findIdByCode(orderStatusEnum.toString());
+            if (statusObj == null) {
+                throw new EntityNotFoundException("No status found for: " + status);
+            }
+            pageOrders = orderRepository.findByOrderStatusId(statusObj.getId(), paging);
+        }
+
+        if (pageOrders.isEmpty()) {
+            throw new EntityNotFoundException("No orders found with the given criteria.");
+        }
+        return pageOrders.getContent();
     }
 }

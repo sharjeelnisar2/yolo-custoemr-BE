@@ -1,8 +1,8 @@
 package com.yolo.customer.enums;
 
-public enum OrderStatus {
+public enum OrderStatusEnum {
     PLACED,
-    INPROCESS,
+    PROCESSING,
     DISPATCHED
 }
 
