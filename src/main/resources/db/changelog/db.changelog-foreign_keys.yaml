@@ -4,14 +4,14 @@ databaseChangeLog:
       author: valeena
       changes:
         - addForeignKeyConstraint:
-            baseTableName: order
+            baseTableName: orders
             baseColumnNames: user_id
             constraintName: fk_order_user_id
             referencedTableName: user
             referencedColumnNames: id
 
         - addForeignKeyConstraint:
-            baseTableName: order
+            baseTableName: orders
             baseColumnNames: order_status_id
             constraintName: fk_order_status_id
             referencedTableName: order_status
@@ -84,7 +84,7 @@ databaseChangeLog:
             baseTableName: order_item
             baseColumnNames: order_id
             constraintName: fk_order_item_order_id
-            referencedTableName: order
+            referencedTableName: orders
             referencedColumnNames: id
 
         - addForeignKeyConstraint:
