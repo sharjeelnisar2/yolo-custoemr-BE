@@ -28,4 +28,11 @@ public class IdeaController {
         return ideaService.submitIdeaToVendor(ideaId, status);
     }
 
+    @PostMapping("/draft")
+    public ResponseEntity<Idea> createDraftIdea(@RequestBody DraftIdeaRequest request,
+                                                @RequestParam Long userId) {
+        Idea idea = ideaService.createDraftIdea(request, userId);
+        return ResponseEntity.ok(idea);
+    }
+
 }

@@ -12,10 +12,12 @@ import com.yolo.customer.idea.interest.InterestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -116,4 +118,55 @@ public class IdeaService {
         return true;
     }
 
+    @Transactional
+    public Idea createDraftIdea(DraftIdeaRequest request, Long userId) {
+        // Create Idea entity
+        Idea idea = new Idea();
+        idea.setTitle(request.getTitle());
+        idea.setDescription(request.getDescription());
+        idea.setUserId(1L);
+        idea.setCode(generateUniqueCode());
+
+        // Set initial status for the idea
+        IdeaStatus draftStatus = ideaStatusRepository.findByValue("Draft").orElseThrow(() ->
+                new RuntimeException("Default Idea Status not found"));
+        idea.setIdeaStatus(draftStatus);
+
+        // Save Idea
+        idea = ideaRepository.save(idea);
+
+        // Create and save Dietary Restrictions
+        Idea finalIdea = idea;
+        List<DietaryRestriction> restrictions = request.getDietaryRestrictions()
+                .stream()
+                .map(desc -> {
+                    DietaryRestriction restriction = new DietaryRestriction();
+                    restriction.setDescription(desc);
+                    restriction.setIdea(finalIdea);
+                    return restriction;
+                })
+                .collect(Collectors.toList());
+
+        dietaryRestrictionRepository.saveAll(restrictions);
+
+        // Create and save Interests
+        Idea finalIdea1 = idea;
+        List<Interest> interests = request.getInterests()
+                .stream()
+                .map(desc -> {
+                    Interest interest = new Interest();
+                    interest.setDescription(desc);
+                    interest.setIdea(finalIdea1);
+                    return interest;
+                })
+                .collect(Collectors.toList());
+
+        interestRepository.saveAll(interests);
+
+        return idea;
+    }
+
+    private String generateUniqueCode() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
 }

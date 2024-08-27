@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface IdeaStatusRepository extends JpaRepository<IdeaStatus, Long> {
     Optional<IdeaStatus> findByValue(String value);
+
 }
