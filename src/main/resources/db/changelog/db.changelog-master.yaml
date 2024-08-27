@@ -23,5 +23,8 @@ databaseChangeLog:
     - include:
         file: db.changelog-role.yaml
         relativeToChangelogFile: true
+    - include:
+        file: db.changelog-insert-user-idea.yaml
+        relativeToChangelogFile: true
 
 
