@@ -1,6 +1,6 @@
 package com.yolo.customer.order;
 
-import com.yolo.customer.enums.OrderStatusEnum;
+import com.yolo.customer.enums.Order_Status;
 import com.yolo.customer.order.orderStatus.OrderStatus;
 import com.yolo.customer.order.orderStatus.OrderStatusRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,14 +39,14 @@ public class OrderService {
         if (status == null || status.isEmpty()) {
             pageOrders = orderRepository.findAll(paging);
         } else {
-            OrderStatusEnum orderStatusEnum;
+            Order_Status orderStatus;
             try {
-                orderStatusEnum = OrderStatusEnum.valueOf(status.toUpperCase());
+                orderStatus = Order_Status.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid order status: " + status);
             }
-            System.out.println(orderStatusEnum);
-            OrderStatus statusObj = orderStatusRepository.findByCode(orderStatusEnum.toString());
+            System.out.println(orderStatus);
+            OrderStatus statusObj = orderStatusRepository.findByCode(orderStatus.toString());
             if (statusObj == null) {
                 throw new EntityNotFoundException("No status found for: " + status);
             }
@@ -65,9 +65,9 @@ public class OrderService {
             throw new EntityNotFoundException("Order not found with code: " + orderCode);
         }
 
-        OrderStatusEnum orderStatusEnum;
+        Order_Status orderStatusEnum;
         try {
-            orderStatusEnum = OrderStatusEnum.valueOf(statusString.toUpperCase());
+            orderStatusEnum = Order_Status.valueOf(statusString.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid order status: " + statusString);
         }
