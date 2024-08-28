@@ -31,9 +31,6 @@ public class AIController {
     @PostMapping("/ai/generate")
     public Map<String, Object> generate(@RequestBody AIRequest requestBody) {
         String prompt = PromptBuilder.buildPrompt(requestBody);
-//        if (prompt.equals("Please enter a valid prompt related to recipe idea generation")) {
-//            return Map.of("error", "Please enter a valid prompt related to recipe idea generation");
-//        }
 
         String result = chatModel.call(prompt);
 

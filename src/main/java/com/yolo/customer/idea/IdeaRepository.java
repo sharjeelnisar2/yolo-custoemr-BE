@@ -7,5 +7,4 @@ import java.util.Optional;
 
 @Repository
 public interface IdeaRepository extends JpaRepository<Idea, Integer> {
-    //Optional<Idea> findById(Long ideaId);
 }
