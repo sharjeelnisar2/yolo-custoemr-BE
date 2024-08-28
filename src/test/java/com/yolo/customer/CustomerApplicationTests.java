@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.security.test.context.support.WithMockUser;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,10 +31,8 @@ class CustomerApplicationTests {
 
 	@Order(1)
 	@Test
+	@WithMockUser(username = "admin", authorities = {"ROLE_VIEW_ORDER_HISTORY"} )
 	public void testGetOrderList() throws Exception {
-
-		//add login header code later
-
 		mockMvc.perform(MockMvcRequestBuilders.get("/users/orders?page=0&size=10")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andDo(MockMvcResultHandlers.print())
@@ -42,12 +42,11 @@ class CustomerApplicationTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.data.orders", Matchers.hasSize(Matchers.greaterThan(0))));
 	}
 
+
 	@Order(2)
 	@Test
+	@WithMockUser(username = "admin", authorities = {"ROLE_VIEW_ORDER_HISTORY"} )
 	public void testGetOrderDetail() throws Exception {
-
-		//add login header code later
-
 		mockMvc.perform(MockMvcRequestBuilders.get("/users/orders/1/orderitems")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andDo(MockMvcResultHandlers.print())
@@ -60,7 +59,6 @@ class CustomerApplicationTests {
 	@Order(3)
 	@Test
 	public void testUpdateOrderStatus() throws Exception {
-		// Add login header code later
 		String updatePayload = "{\"order_status\":\"DISPATCHED\"}";
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/users/orders/ORD001")

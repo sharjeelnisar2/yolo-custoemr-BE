@@ -6,6 +6,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +30,7 @@ public class OrderController {
         return null;
     }
 
-    //add pre-auth for vendor
+    //@PreAuthorize("hasAuthority('')")//use vendor side role here
     @PatchMapping("/users/orders/{order_code}")
     public ResponseEntity<?> updateOrder(
             @PathVariable String order_code,
@@ -59,15 +61,18 @@ public class OrderController {
         }
     }
 
-
-    // add preauthorize + lis of signed in user only ROLE_VIEW_ORDER_HISTORY
+    @PreAuthorize("hasAuthority('ROLE_VIEW_ORDER_HISTORY')")
     @GetMapping("/users/orders")
     public ResponseEntity<?> getOrderList(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "status", required = false) String status) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(username);
+
         try {
-            List<Order> orders = orderService.findAll(page, size, status);
+            List<Order> orders = orderService.findAll(page, size, status, username);
             return ResponseEntity.ok(new ResponseObject<>(true, "orders", orders));
         } catch (EntityNotFoundException e) {
             log.warn("Entity not found: {}", e.getMessage());
