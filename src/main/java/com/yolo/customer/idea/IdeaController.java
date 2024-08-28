@@ -29,9 +29,8 @@ public class IdeaController {
     }
 
     @PostMapping("/draft")
-    public ResponseEntity<Idea> createDraftIdea(@RequestBody DraftIdeaRequest request,
-                                                @RequestParam Long userId) {
-        Idea idea = ideaService.createDraftIdea(request, userId);
+    public ResponseEntity<Idea> createDraftIdea(@RequestBody DraftIdeaRequest request) {
+        Idea idea = ideaService.createDraftIdea(request);
         return ResponseEntity.ok(idea);
     }
 
