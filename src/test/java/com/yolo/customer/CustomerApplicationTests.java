@@ -48,12 +48,27 @@ class CustomerApplicationTests {
 
 		//add login header code later
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/users/orders/2/orderitems")
+		mockMvc.perform(MockMvcRequestBuilders.get("/users/orders/1/orderitems")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.data.orderItems", Matchers.notNullValue()));
+	}
+
+	@Order(3)
+	@Test
+	public void testUpdateOrderStatus() throws Exception {
+		// Add login header code later
+		String updatePayload = "{\"order_status\":\"DISPATCHED\"}";
+
+		mockMvc.perform(MockMvcRequestBuilders.patch("/users/orders/ORD001")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(updatePayload))
+				.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Order status updated successfully"));
 	}
 }

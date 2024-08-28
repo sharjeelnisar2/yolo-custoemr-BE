@@ -26,6 +26,9 @@ public class OrderItem {
     @Column(name = "recipe_id", nullable = false)
     private int recipeId;
 
+    @Column(name = "price", nullable = false)
+    private long price;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

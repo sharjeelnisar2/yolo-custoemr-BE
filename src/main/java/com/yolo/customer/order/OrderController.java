@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @CrossOrigin
@@ -17,15 +18,49 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService){
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
-    @PatchMapping("/users/orders/{order_code}")
-    public ResponseEntity<?> updateOrder(@PathVariable Integer trackingID){
+
+    @PostMapping("/users/orders")
+    public ResponseEntity<?> createOrder(@RequestBody Order order){
+
         return null;
     }
 
-    //add preauthorize
+    //add pre-auth for vendor
+    @PatchMapping("/users/orders/{order_code}")
+    public ResponseEntity<?> updateOrder(
+            @PathVariable String order_code,
+            @RequestBody Map<String, String> requestBody) {
+
+        String orderStatus = requestBody.get("order_status");
+        if (orderStatus == null || orderStatus.isEmpty()) {
+            return ResponseEntity.badRequest().body("Order status is required");
+        }
+
+        try {
+            orderService.updateOrderStatus(order_code, orderStatus);
+            return ResponseEntity.ok(new ResponseObject<>(true, "orders", orderStatus));
+        } catch (EntityNotFoundException e) {
+            log.warn("Entity not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            log.warn("Illegal argument: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            log.error("Internal server error: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+                            ex.getMessage()));
+        }
+    }
+
+
+    // add preauthorize + lis of signed in user only ROLE_VIEW_ORDER_HISTORY
     @GetMapping("/users/orders")
     public ResponseEntity<?> getOrderList(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -40,11 +75,13 @@ public class OrderController {
                     .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
         } catch (IllegalArgumentException e) {
             log.warn("Illegal argument: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
+            return ResponseEntity.badRequest()
+                    .body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
         } catch (Exception ex) {
             log.error("Internal server error: {}", ex.getMessage(), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
+                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+                            ex.getMessage()));
         }
     }
 }
