@@ -1,5 +1,4 @@
-package com.yolo.customer.recipe;
-
+package com.yolo.customer.currency;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,34 +6,23 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity(name="recipe")
 @Getter
 @Setter
-public class Recipe {
+@Entity(name = "currency")
+public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name", nullable = false, length = 64)
-    private String name;
-
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-
-    @Column(name = "serving_size")
-    private Integer servingSize;
-
-    @Column(name = "price", columnDefinition = "BIGINT UNSIGNED")
-    private Long price;
-
-    @Column(name = "code", unique = true, length = 8)
+    @Column(name = "code", length = 3)
     private String code;
 
-    @Column(name = "idea_id", nullable = false)
-    private Integer ideaId;
+    @Column(name = "name", length = 32)
+    private String name;
 
-    @Column(name = "currency_id", nullable = false)
-    private Integer currencyId;
+    @Column(name = "symbol", length = 3)
+    private String symbol;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -51,4 +39,5 @@ public class Recipe {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-}
+
+    }
