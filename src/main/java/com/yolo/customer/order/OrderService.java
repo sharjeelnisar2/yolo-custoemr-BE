@@ -17,9 +17,9 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
 
-    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository){
-        this.orderRepository=orderRepository;
-        this.orderStatusRepository=orderStatusRepository;
+    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository) {
+        this.orderRepository = orderRepository;
+        this.orderStatusRepository = orderStatusRepository;
     }
 
     public List<Order> findAll(Integer page, Integer size, String status) {
@@ -46,7 +46,7 @@ public class OrderService {
                 throw new IllegalArgumentException("Invalid order status: " + status);
             }
             System.out.println(orderStatusEnum);
-            OrderStatus statusObj = orderStatusRepository.findIdByCode(orderStatusEnum.toString());
+            OrderStatus statusObj = orderStatusRepository.findByCode(orderStatusEnum.toString());
             if (statusObj == null) {
                 throw new EntityNotFoundException("No status found for: " + status);
             }
@@ -57,5 +57,27 @@ public class OrderService {
             throw new EntityNotFoundException("No orders found with the given criteria.");
         }
         return pageOrders.getContent();
+    }
+
+    public void updateOrderStatus(String orderCode, String statusString) {
+        Order order = orderRepository.findByCode(orderCode);
+        if (order == null) {
+            throw new EntityNotFoundException("Order not found with code: " + orderCode);
+        }
+
+        OrderStatusEnum orderStatusEnum;
+        try {
+            orderStatusEnum = OrderStatusEnum.valueOf(statusString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid order status: " + statusString);
+        }
+
+        OrderStatus orderStatus = orderStatusRepository.findByCode(orderStatusEnum.toString());
+        if (orderStatus == null) {
+            throw new EntityNotFoundException("No status found for: " + orderStatusEnum);
+        }
+
+        order.setOrderStatusId(orderStatus.getId());
+        orderRepository.save(order);
     }
 }
