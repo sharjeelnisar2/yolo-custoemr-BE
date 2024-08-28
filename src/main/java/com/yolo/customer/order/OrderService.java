@@ -113,9 +113,56 @@ public class OrderService {
     }
 
     private boolean callVendorApi(OrderRequest orderRequest) {
-        // Simulating the vendor API call
-        // You can add your logic here later, for now it just returns true
-        return true;
+        // Dummy data for customer details
+        String customerContactNumber = "+1234567890";
+        VendorOrderRequest.Address address = new VendorOrderRequest.Address();
+        address.setHouse("123");
+        address.setStreet(456);
+        address.setArea("Downtown");
+        address.setZipCode("string");
+        address.setCity("Metropolis");
+        address.setCountry("US");
+
+        VendorOrderRequest.OrderDetails orderDetails = new VendorOrderRequest.OrderDetails();
+        orderDetails.setTotalPrice(orderRequest.getOrder().getTotalPrice());
+        orderDetails.setCurrencyCode(orderRequest.getOrder().getCurrencyCode());
+        orderDetails.setOrderCode("ORD00001"); // You can generate or fetch this dynamically
+        orderDetails.setCustomerContactNumber(customerContactNumber);
+        orderDetails.setAddress(address);
+
+        List<VendorOrderRequest.OrderDetails.OrderItem> orderItems = orderRequest.getOrder().getOrderItems().stream()
+                .map(item -> {
+                    VendorOrderRequest.OrderDetails.OrderItem orderItem = new VendorOrderRequest.OrderDetails.OrderItem();
+                    orderItem.setQuantity(item.getQuantity());
+                    orderItem.setPrice(item.getPrice());
+                    orderItem.setRecipeCode(String.valueOf(item.getRecipeId())); // Assuming recipeCode is a string
+                    return orderItem;
+                })
+                .collect(Collectors.toList());
+
+        orderDetails.setOrderItems(orderItems);
+
+        VendorOrderRequest vendorOrderRequest = new VendorOrderRequest();
+        vendorOrderRequest.setOrder(orderDetails);
+
+        // Prepare HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<VendorOrderRequest> requestEntity = new HttpEntity<>(vendorOrderRequest, headers);
+
+        // Initialize RestTemplate
+        RestTemplate restTemplate = new RestTemplate();
+        String vendorApiUrl = "http://vendor-api-url.com/orders"; // Replace with the actual URL
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(vendorApiUrl, HttpMethod.POST, requestEntity, String.class);
+            // Handle the response from the vendor API
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            // Handle the exception
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private String generateUniqueCode() {
