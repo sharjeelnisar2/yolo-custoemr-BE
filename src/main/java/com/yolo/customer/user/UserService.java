@@ -32,36 +32,7 @@ public class UserService {
         return userDetails;
     }
 
-//    public User createUser(String username, String email) {
-//        if (username == null || username.trim().isEmpty()) {
-//            throw new IllegalArgumentException("Username is required.");
-//        }
-//        if (email == null || email.trim().isEmpty()) {
-//            throw new IllegalArgumentException("Email is required.");
-//        }
-//
-//        if (userRepository.existsByUsername(username)) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists.");
-//        }
-//
-//        if (userRepository.existsByEmail(email)) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists.");
-//        }
-//
-//        Role customerRole = roleRepository.findByName("CUSTOMER");
-//
-//        if (customerRole == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role CUSTOMER not found.");
-//        }
-//
-//        User newUser = new User();
-//        newUser.setUsername(username);
-//        newUser.setEmail(email);
-//        newUser.setIsDeleted(false);
-//        newUser.setRoleId(customerRole.getId());
-//
-//        return userRepository.save(newUser);
-//    }
+
 
     private List<String> extractRolesFromJwt(Jwt jwt) {
         Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
