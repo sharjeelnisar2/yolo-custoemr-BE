@@ -29,7 +29,33 @@ public class UserService {
         }
         userDetails.put("roles", roles);
 
+        createUser(jwt.getClaim("preferred_username"), jwt.getClaim("email"));
         return userDetails;
+    }
+
+        public User createUser(String username, String email) {
+
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username is required.");
+        }
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email is required.");
+        }
+
+        if (userRepository.existsByUsername(username)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists.");
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists.");
+        }
+
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setEmail(email);
+        newUser.setIsDeleted(false);
+
+        return userRepository.save(newUser);
     }
 
     private List<String> extractRolesFromJwt(Jwt jwt) {
