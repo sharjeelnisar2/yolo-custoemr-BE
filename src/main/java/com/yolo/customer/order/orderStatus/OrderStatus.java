@@ -17,7 +17,7 @@ public class OrderStatus {
     @Column(name = "code", nullable = false, unique = true, length = 16)
     private String code;
 
-    @Column(name =  "\"value\"", nullable = false, unique = true, length = 16)
+    @Column(name = "value", nullable = false, unique = true, length = 16)
     private String value;
 
     @Column(name = "is_active", nullable = false)

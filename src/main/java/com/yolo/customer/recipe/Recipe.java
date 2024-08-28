@@ -1,14 +1,11 @@
 package com.yolo.customer.recipe;
 
+
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@Entity(name = "recipe")
+@Entity(name="recipe")
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
