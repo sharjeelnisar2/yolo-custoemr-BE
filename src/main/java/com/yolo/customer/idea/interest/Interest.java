@@ -1,6 +1,6 @@
-package com.yolo.customer.idea;
+package com.yolo.customer.idea.interest;
 
-import com.yolo.customer.idea.ideaStatus.IdeaStatus;
+import com.yolo.customer.idea.Idea;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,27 +10,19 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class Idea {
+@Table(name = "interest")
+public class Interest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "title", length = 64, nullable = false)
-    private String title;
-
-    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "description", length = 32, nullable = false)
     private String description;
 
-    @Column(name = "code", length = 8, unique = true, nullable = false)
-    private String code;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idea_status_id", nullable = false)
-    private IdeaStatus ideaStatus;
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @JoinColumn(name = "idea_id", nullable = false)
+    private Idea idea;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -50,28 +42,25 @@ public class Idea {
     }
 
     // Defensive copy of mutable internal state
-    public IdeaStatus getIdeaStatus() {
-        return ideaStatus != null ? new IdeaStatus(ideaStatus) : null;
+    public Idea getIdea() {
+        return idea != null ? new Idea(idea) : null;
     }
 
-    public void setIdeaStatus(IdeaStatus ideaStatus) {
-        this.ideaStatus = ideaStatus != null ? new IdeaStatus(ideaStatus) : null;
+    public void setIdea(Idea idea) {
+        this.idea = idea != null ? new Idea(idea) : null;
     }
 
     // Copy constructor
-    public Idea(Idea other) {
+    public Interest(Interest other) {
         if (other != null) {
             this.id = other.id;
-            this.title = other.title;
             this.description = other.description;
-            this.code = other.code;
-            this.ideaStatus = other.ideaStatus != null ? new IdeaStatus(other.ideaStatus) : null;
-            this.userId = other.userId;
+            this.idea = other.idea != null ? new Idea(other.idea) : null;
             this.createdAt = other.createdAt;
             this.updatedAt = other.updatedAt;
         }
     }
 
     // Default constructor
-    public Idea() {}
+    public Interest() {}
 }
