@@ -15,12 +15,6 @@ public class IdeaController {
     public IdeaController(IdeaService ideaService) {
         this.ideaService = ideaService;
     }
-//
-//    @PatchMapping("/recipes/{recipe_id}")
-//    public ResponseEntity<Map<String, String>> updateRecipeStatus(@PathVariable("recipe_id") Integer recipeId, @RequestBody Map<String, String> requestBody ) throws Exception {
-//        String status = requestBody.get("status");
-//        return recipeService.updateRecipeStatus(recipeId, status);
-//    }
 
     @PatchMapping("/{ideaId}")
     public ResponseEntity<Map<String, String>> submitIdeaToVendor(@PathVariable("ideaId") Integer ideaId, @RequestBody Map<String, String> requestBody) {
