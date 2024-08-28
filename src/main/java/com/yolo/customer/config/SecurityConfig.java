@@ -26,8 +26,6 @@ public class SecurityConfig {
         http.formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-//                .requestMatchers("/testAPI")
-//                                .hasAuthority("ROLE_customer")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConfig.jwtAuthenticationConverter())))
