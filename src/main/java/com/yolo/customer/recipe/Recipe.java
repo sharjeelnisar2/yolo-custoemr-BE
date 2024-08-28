@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Getter
@@ -24,7 +25,7 @@ public class Recipe {
     private Integer servingSize;
 
     @Column(name = "price", columnDefinition = "BIGINT UNSIGNED")
-    private Long price;
+    private BigInteger price;
 
     @Column(name = "code", unique = true, length = 8)
     private String code;

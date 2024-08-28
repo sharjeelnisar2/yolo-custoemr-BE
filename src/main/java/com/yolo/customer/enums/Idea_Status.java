@@ -1,6 +1,6 @@
 package com.yolo.customer.enums;
 
-public enum IdeaStatusEnum {
+public enum Idea_Status {
     DRAFT,
     SUBMITTED
 }

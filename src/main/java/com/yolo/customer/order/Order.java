@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class Order {
     private Integer id;
 
     @Column(name = "price", nullable = false)
-    private long price;
+    private BigInteger price;
 
     @Column(name = "code", length = 8, unique = true, nullable = false)
     private String code;

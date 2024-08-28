@@ -32,13 +32,6 @@ databaseChangeLog:
             referencedColumnNames: id
 
         - addForeignKeyConstraint:
-            baseTableName: user
-            baseColumnNames: role_id
-            constraintName: fk_role_user_id
-            referencedTableName: role
-            referencedColumnNames: id
-
-        - addForeignKeyConstraint:
             baseTableName: idea
             baseColumnNames: user_id
             constraintName: fk_idea_user_id
