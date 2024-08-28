@@ -32,8 +32,6 @@ public class UserService {
         return userDetails;
     }
 
-
-
     private List<String> extractRolesFromJwt(Jwt jwt) {
         Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
         Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("CustomerVue");
