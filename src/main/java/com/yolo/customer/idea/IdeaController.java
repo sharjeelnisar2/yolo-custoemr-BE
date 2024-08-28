@@ -23,7 +23,7 @@ public class IdeaController {
     }
 
     @PostMapping("/draft")
-    public ResponseEntity<Idea> createDraftIdea(@RequestBody DraftIdeaRequest request) {
+    public ResponseEntity<Idea> createDraftIdea(@RequestBody IdeaRequest request) {
         Idea idea = ideaService.createDraftIdea(request);
         return ResponseEntity.ok(idea);
     }

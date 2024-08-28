@@ -8,7 +8,6 @@ import java.util.List;
 @Getter
 @Setter
 public class AIRequest {
-    private String message;
     private List<String> interests;
     private List<String> dietaryRestrictions;
 
