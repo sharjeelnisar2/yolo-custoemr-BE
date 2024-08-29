@@ -30,7 +30,6 @@ public class UserProfileService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        System.out.println(userProfileRequest.getCurrencyCode());
         Currency currency = currencyRepository.findByCode(userProfileRequest.getCurrencyCode())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Currency not found"));
 

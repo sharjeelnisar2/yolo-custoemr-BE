@@ -17,7 +17,6 @@ public class UserProfileController {
     public ResponseEntity<String> createUserProfile(
             @PathVariable String username,
             @Valid @RequestBody UserProfileRequestDTO userProfileRequest) {
-        System.out.println(userProfileRequest.getHouse());
         UserProfile userProfile = userProfileService.createUserProfile(username, userProfileRequest);
         return ResponseEntity.ok("User profile created successfully.");
     }
