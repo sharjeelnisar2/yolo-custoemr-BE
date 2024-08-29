@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole('ROLE_VIEW_USER_INFO', 'ROLE_CREATE_ACCOUNT')")
+    @PreAuthorize("hasAuthority('ROLE_VIEW_USER_INFO', 'ROLE_CREATE_ACCOUNT')")
     @GetMapping("/jwtToken")
     public Map<String, Object> decodeJwt(Authentication authentication) {
         Jwt jwt = (Jwt) authentication.getPrincipal();

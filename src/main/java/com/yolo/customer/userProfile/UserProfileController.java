@@ -12,7 +12,7 @@ public class UserProfileController {
     @Autowired
     private UserProfileService userProfileService;
 
-    @PreAuthorize("hasRole('ROLE_CREATE_PROFILE')")
+    @PreAuthorize("hasAuthority('ROLE_CREATE_PROFILE')")
     @PostMapping("/{username}/profiles")
     public ResponseEntity<String> createUserProfile(
             @PathVariable String username,
