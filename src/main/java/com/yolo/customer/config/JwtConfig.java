@@ -41,8 +41,8 @@ public class JwtConfig {
                 .collect(Collectors.toList());
     }
 
-//    @Bean
-//    public JWTAuthenticationFilter jwtAuthenticationFilter() {
-//        return new JWTAuthenticationFilter();
-//    }
+    @Bean
+    public JWTAuthenticationFilter jwtAuthenticationFilter() {
+        return new JWTAuthenticationFilter();
+    }
 }
