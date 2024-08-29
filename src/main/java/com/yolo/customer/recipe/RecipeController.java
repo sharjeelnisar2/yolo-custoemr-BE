@@ -47,7 +47,7 @@ public class RecipeController {
         }
     }
 
-    //@PreAuthorize("hasAuthority('ROLE_UPDATE_RECIPE_STATUS')")
+    @PreAuthorize("hasAuthority('ROLE_UPDATE_RECIPE_STATUS')")
     @PostMapping
     public ResponseEntity<?> createRecipe(@RequestBody RecipeRequest newRecipe) {
         try {
