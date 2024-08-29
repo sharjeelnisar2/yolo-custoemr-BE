@@ -73,52 +73,18 @@ public class OrderService {
         return pageOrders.getContent();
     }
 
-//    @Transactional
-//    public boolean placeOrder(OrderRequest orderRequest) {
-//        OrderRequest.OrderDto orderDto = orderRequest.getOrder();
-//
-//        if (orderDto.getTotalPrice() < 0) {
-//            throw new IllegalArgumentException("Total price must not be less than 0.");
-//        }
-//
-//        for (OrderRequest.OrderItemDto itemDto : orderDto.getOrderItems()) {
-//            if (itemDto.getQuantity() < 1) {
-//                throw new IllegalArgumentException("Quantity must not be less than 1" );
-//            }
-//            if (itemDto.getPrice() < 0) {
-//                throw new IllegalArgumentException("Price must not be less than 0" );
-//            }
-//        }
-//
-//        Order order = new Order();
-//        order.setCode(generateUniqueCode());
-//        order.setPrice(orderDto.getTotalPrice());
-//        order.setOrderStatusId(1);
-//
-//        order.setUserId(1); // Hardcoded user ID for now
-//
-//        orderRepository.save(order);
-//
-//        for (OrderRequest.OrderItemDto itemDto : orderDto.getOrderItems()) {
-//
-//            if (recipeRepository.existsById(itemDto.getRecipeId())) {
-//                OrderItem orderItem = new OrderItem();
-//                orderItem.setQuantity(itemDto.getQuantity());
-//                orderItem.setPrice(itemDto.getPrice());
-//                orderItem.setRecipeId(itemDto.getRecipeId());
-//                orderItem.setOrderId(order.getId());
-//                orderItemRepository.save(orderItem);
-//            } else {
-//                throw new EntityNotFoundException("Recipe with ID " + itemDto.getRecipeId() + " does not exist.");
-//            }
-//        }
-//
-//        return true;
-//    }
-
     @Transactional
     public boolean placeOrder(OrderRequest orderRequest) {
         OrderRequest.OrderDto orderDto = orderRequest.getOrder();
+        System.out.println("OrderDto: " + orderDto);
+
+        if (orderDto == null) {
+            throw new IllegalArgumentException("Order cannot be null.");
+        }
+
+        if (orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
+            throw new IllegalArgumentException("Order items must not be null or empty.");
+        }
 
         if (orderDto.getTotalPrice() < 0) {
             throw new IllegalArgumentException("Total price must not be less than 0.");
@@ -142,7 +108,8 @@ public class OrderService {
         order.setOrderStatusId(1);
         order.setUserId(1);
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        System.out.println("Saved Order: " + savedOrder);
 
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderRequest.OrderItemDto itemDto : orderDto.getOrderItems()) {
@@ -152,12 +119,15 @@ public class OrderService {
                 orderItem.setPrice(itemDto.getPrice());
                 orderItem.setRecipeId(itemDto.getRecipeId());
                 orderItem.setOrderId(order.getId());
-                orderItemRepository.save(orderItem);
+                OrderItem savedOrderItem = orderItemRepository.save(orderItem);
+                System.out.println("Saved OrderItem: " + savedOrderItem);
                 orderItems.add(orderItem);
             } else {
                 throw new EntityNotFoundException("Recipe with ID " + itemDto.getRecipeId() + " does not exist.");
             }
         }
+
+        System.out.println("Order Items: " + orderItems);
 
         // Call the vendor API with the generated order code and order items
         boolean vendorApiSuccess = callVendorApi(orderCode, totalPrice, orderItems);
@@ -169,6 +139,7 @@ public class OrderService {
 
         return true;
     }
+
 
     private boolean callVendorApi(String orderCode, Long totalPrice, List<OrderItem> orderItems) {
         // Dummy data for customer details
