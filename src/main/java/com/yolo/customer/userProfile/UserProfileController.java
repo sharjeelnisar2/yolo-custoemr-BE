@@ -16,11 +16,11 @@ public class UserProfileController {
     private UserProfileService userProfileService;
 
     @PreAuthorize("hasAuthority('ROLE_CREATE_PROFILE')")
-    @PostMapping("/{username}/profiles")
+    @PostMapping("/profiles")
     public ResponseEntity<String> createUserProfile(
             @PathVariable String username,
             @Valid @RequestBody UserProfileRequestDTO userProfileRequest) {
-        UserProfile userProfile = userProfileService.createUserProfile(username, userProfileRequest);
+        UserProfile userProfile = userProfileService.createUserProfile(userProfileRequest);
         return ResponseEntity.ok("User profile created successfully.");
     }
 

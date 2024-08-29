@@ -32,7 +32,10 @@ public class UserProfileService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserProfile createUserProfile(String username, UserProfileRequestDTO userProfileRequest) {
+    public UserProfile createUserProfile(UserProfileRequestDTO userProfileRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
