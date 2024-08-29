@@ -28,7 +28,7 @@ public class OrderService {
 
     public List<Order> findAll(Integer page, Integer size, String status, String username) {
 
-        User loggedInUser = userRepository.findByUsername(username);
+        User loggedInUser = userRepository.findByUsername(username).get();
 
         if(loggedInUser == null) {
             throw new IllegalArgumentException("User with given username doesnot exists: " + username);
@@ -49,7 +49,7 @@ public class OrderService {
         Page<Order> pageOrders;
 
         if (status == null || status.isEmpty()) {
-            pageOrders = orderRepository.findByUserId(userId,paging);
+            pageOrders = orderRepository. findByUserIdOrderByCreatedAtDesc(userId,paging);
         } else {
             Order_Status orderStatus;
             try {
@@ -62,7 +62,7 @@ public class OrderService {
             if (statusObj == null) {
                 throw new EntityNotFoundException("No status found for: " + status);
             }
-            pageOrders = orderRepository.findByOrderStatusIdAndUserId(statusObj.getId(), userId ,paging);
+            pageOrders = orderRepository.findByOrderStatusIdAndUserIdOrderByCreatedAtDesc(statusObj.getId(), userId ,paging);
         }
 
         if (pageOrders.isEmpty()) {
