@@ -20,4 +20,15 @@ public class UserProfileController {
         UserProfile userProfile = userProfileService.createUserProfile(username, userProfileRequest);
         return ResponseEntity.ok("User profile created successfully.");
     }
+
+
+    @PreAuthorize("hasAuthority('ROLE_UPDATE_PROFILE')")
+    @PatchMapping("/{username}/profiles")
+    public ResponseEntity<String> updateUserProfile(
+            @PathVariable String username,
+            @Valid @RequestBody UpdateUserProfileDTO userProfileUpdateRequest) {
+        userProfileService.updateUserProfile(username, userProfileUpdateRequest);
+        return ResponseEntity.ok("User profile updated successfully.");
+    }
+
 }

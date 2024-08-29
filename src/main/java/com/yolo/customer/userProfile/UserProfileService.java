@@ -6,6 +6,7 @@ import com.yolo.customer.currency.Currency;
 import com.yolo.customer.currency.CurrencyRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -53,4 +54,55 @@ public class UserProfileService {
 
         return userProfile;
     }
+
+    @Transactional
+    public void updateUserProfile(String username, UpdateUserProfileDTO userProfileUpdateRequest) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        UserProfile existingProfile = userProfileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found"));
+
+        if (userProfileUpdateRequest.getContact_number() != null) {
+            existingProfile.setContactNumber(userProfileUpdateRequest.getContact_number());
+        }
+
+        if (userProfileUpdateRequest.getHouse() != null || userProfileUpdateRequest.getStreet() != null ||
+                userProfileUpdateRequest.getArea() != null || userProfileUpdateRequest.getZip_code() != null ||
+                userProfileUpdateRequest.getCity() != null || userProfileUpdateRequest.getCountry() != null) {
+
+            Address address = addressRepository.findById(existingProfile.getAddressId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+
+            if (userProfileUpdateRequest.getHouse() != null) {
+                address.setHouse(userProfileUpdateRequest.getHouse());
+            }
+            if (userProfileUpdateRequest.getStreet() != null) {
+                address.setStreet(userProfileUpdateRequest.getStreet());
+            }
+            if (userProfileUpdateRequest.getArea() != null) {
+                address.setArea(userProfileUpdateRequest.getArea());
+            }
+            if (userProfileUpdateRequest.getZip_code() != null) {
+                address.setZipCode(userProfileUpdateRequest.getZip_code());
+            }
+            if (userProfileUpdateRequest.getCity() != null) {
+                address.setCity(userProfileUpdateRequest.getCity());
+            }
+            if (userProfileUpdateRequest.getCountry() != null) {
+                address.setCountry(userProfileUpdateRequest.getCountry());
+            }
+            addressRepository.save(address);
+        }
+
+        if (userProfileUpdateRequest.getCurrency_code() != null) {
+            Currency currency = currencyRepository.findByCode(userProfileUpdateRequest.getCurrency_code())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Currency not found"));
+            existingProfile.setCurrencyId(currency.getId());
+        }
+
+        userProfileRepository.save(existingProfile);
+    }
+
+
 }
