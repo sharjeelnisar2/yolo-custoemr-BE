@@ -19,6 +19,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import com.yolo.customer.utils.GetContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -47,8 +50,10 @@ public class OrderService {
         this.addressRepository = addressRepository;
     }
 
-    public List<Order> findAll(Integer page, Integer size, String status, String username) {
+    public List<Order> findAll(Integer page, Integer size, String status) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
         User loggedInUser = userRepository.findByUsername(username).get();
 
         if(loggedInUser == null) {
