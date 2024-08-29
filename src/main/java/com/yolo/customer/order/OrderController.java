@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -68,11 +70,8 @@ public class OrderController {
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "status", required = false) String status) {
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(username);
-
         try {
-            List<Order> orders = orderService.findAll(page, size, status, username);
+            List<Order> orders = orderService.findAll(page, size, status);
             return ResponseEntity.ok(new ResponseObject<>(true, "orders", orders));
         } catch (EntityNotFoundException e) {
             log.warn("Entity not found: {}", e.getMessage());
