@@ -12,15 +12,15 @@ import lombok.Setter;
 public class UserProfileRequestDTO {
     @NotBlank(message = "First name is required")
     @Size(max = 16, message = "First name must be less than 16 characters")
-    private String firstName;
+    private String first_name;
 
     @NotBlank(message = "Last name is required")
     @Size(max = 16, message = "Last name must be less than 16 characters")
-    private String lastName;
+    private String last_name;
 
     @NotBlank(message = "Contact number is required")
     @Pattern(regexp = "\\d{13}", message = "Contact number must be 13 digits")
-    private String contactNumber;
+    private String contact_number;
 
     @NotBlank(message = "House is required")
     @Size(max = 16, message = "House must be less than 16 characters")
@@ -35,7 +35,7 @@ public class UserProfileRequestDTO {
 
     @NotNull(message = "Zip code is required")
     @Size(min = 4, max = 5, message = "Zip code must be between 4 and 5 characters")
-    private String zipCode;
+    private String zip_code;
 
     @NotBlank(message = "City is required")
     @Size(max = 32, message = "City must be less than 32 characters")
@@ -46,5 +46,5 @@ public class UserProfileRequestDTO {
     private String country;
 
     @NotBlank(message = "Currency code is required")
-    private String currencyCode;
+    private String currency_code;
 }

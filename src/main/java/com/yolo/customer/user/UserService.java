@@ -29,7 +29,9 @@ public class UserService {
         }
         userDetails.put("roles", roles);
 
-        createUser(jwt.getClaim("preferred_username"), jwt.getClaim("email"));
+        if (!userRepository.existsByUsername(jwt.getClaim("preferred_username"))) {
+            createUser(jwt.getClaim("preferred_username"), jwt.getClaim("email"));
+        }
         return userDetails;
     }
 
