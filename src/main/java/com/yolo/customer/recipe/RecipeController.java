@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
+    @PreAuthorize("hasAuthority('ROLE_VIEW_ALL_RECIPES')")
     @GetMapping
     public ResponseEntity<?> getRecipeList(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -29,8 +31,8 @@ public class RecipeController {
             @RequestParam(name = "ideaId", required = false) Integer ideaId,
             @RequestParam(name = "search", required = false) String search) {
         try {
-            List<Recipe> recipes = recipeService.findAll(page, size, ideaId, search);
-            return ResponseEntity.ok(new ResponseObject<>(true, "recipes", recipes));
+            List<RecipeResponse> recipeResponses = recipeService.findAll(page, size, ideaId, search);
+            return ResponseEntity.ok(new ResponseObject<>(true, "recipes", recipeResponses));
         } catch (EntityNotFoundException e) {
             log.warn("Entity not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -45,6 +47,7 @@ public class RecipeController {
         }
     }
 
+    //@PreAuthorize("hasAuthority('ROLE_UPDATE_RECIPE_STATUS')")
     @PostMapping
     public ResponseEntity<?> createRecipe(@RequestBody RecipeRequest newRecipe) {
         try {

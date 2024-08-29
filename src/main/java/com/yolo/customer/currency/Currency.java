@@ -8,26 +8,25 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name = "currency")
+@Entity
 public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    private int id;
 
-    @Column(name = "code", length = 3)
+    @Column(name = "code", nullable = false, unique = true, length = 3)
     private String code;
 
-    @Column(name = "name", length = 32)
+    @Column(name = "name", nullable = false, unique = true, length = 32)
     private String name;
 
-    @Column(name = "symbol", length = 3)
+    @Column(name = "symbol", nullable = false, length = 3)
     private String symbol;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 
     @PrePersist
@@ -39,5 +38,4 @@ public class Currency {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
-    }
+}

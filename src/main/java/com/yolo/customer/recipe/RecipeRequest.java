@@ -12,6 +12,9 @@ public class RecipeRequest {
     private String description;
     private Integer servingSize;
     private Long price;
-    private String code;
+    private String ideaCode;
+    private String recipeCode;
+    private String chefCode;
+    private String chefName;
     private List<String> url;
 }

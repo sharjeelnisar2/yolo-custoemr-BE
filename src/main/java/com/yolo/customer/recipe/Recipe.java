@@ -1,15 +1,15 @@
 package com.yolo.customer.recipe;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
-@Entity(name="recipe")
 @Getter
 @Setter
+@Entity(name = "recipe")
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,15 @@ public class Recipe {
     @Column(name = "serving_size")
     private Integer servingSize;
 
+    @Column(name = "chef_code", unique = true, length = 8)
+    private String chefCode;
+
+    @Column(name = "chef_name", nullable = false)
+    private String chefName;
+
+
     @Column(name = "price", columnDefinition = "BIGINT UNSIGNED")
-    private Long price;
+    private BigInteger price;
 
     @Column(name = "code", unique = true, length = 8)
     private String code;

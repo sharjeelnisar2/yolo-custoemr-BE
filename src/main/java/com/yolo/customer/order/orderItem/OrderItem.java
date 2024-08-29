@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,6 +26,9 @@ public class OrderItem {
 
     @Column(name = "recipe_id", nullable = false)
     private int recipeId;
+
+    @Column(name = "price", nullable = false)
+    private BigInteger price;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
