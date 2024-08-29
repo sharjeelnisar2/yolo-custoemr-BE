@@ -30,6 +30,12 @@ public class Recipe {
     @Column(name = "code", unique = true, length = 8)
     private String code;
 
+    @Column(name = "chef_code", unique = true, length = 8)
+    private String chefCode;
+
+    @Column(name = "chef_name", nullable = false)
+    private String chefName;
+
     @Column(name = "idea_id", nullable = false)
     private Integer ideaId;
 
