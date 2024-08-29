@@ -1,9 +1,6 @@
 package com.yolo.customer;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +10,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import util.SecurityTestUtil;
+
+import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,6 +25,14 @@ public class UserTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @BeforeEach
+    public void setUp() {
+        SecurityTestUtil.setJwtAuthenticationToken("admin",
+                Set.of("UPDATE_PROFILE"),
+                Map.of("preferred_username", "admin")
+        );
+    }
 
     @Test
     @Order(1)
@@ -48,7 +57,7 @@ public class UserTests {
     @WithMockUser(username = "admin", authorities = {"ROLE_UPDATE_PROFILE"})
     public void testUpdateUserProfileSuccess() throws Exception {
         String userProfileUpdateJson = "{\"city\":\"Gotham\"}";
-        mockMvc.perform(MockMvcRequestBuilders.patch("/users/testUser/profiles")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/profiles")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userProfileUpdateJson))
                 .andExpect(status().isOk())

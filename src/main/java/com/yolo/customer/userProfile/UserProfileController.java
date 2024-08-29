@@ -23,11 +23,10 @@ public class UserProfileController {
 
 
     @PreAuthorize("hasAuthority('ROLE_UPDATE_PROFILE')")
-    @PatchMapping("/{username}/profiles")
+    @PatchMapping("/profiles")
     public ResponseEntity<String> updateUserProfile(
-            @PathVariable String username,
             @Valid @RequestBody UpdateUserProfileDTO userProfileUpdateRequest) {
-        userProfileService.updateUserProfile(username, userProfileUpdateRequest);
+        userProfileService.updateUserProfile(userProfileUpdateRequest);
         return ResponseEntity.ok("User profile updated successfully.");
     }
 

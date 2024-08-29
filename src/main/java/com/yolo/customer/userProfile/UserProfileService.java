@@ -6,9 +6,12 @@ import com.yolo.customer.currency.Currency;
 import com.yolo.customer.currency.CurrencyRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
+import com.yolo.customer.utils.GetContextHolder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -56,7 +59,9 @@ public class UserProfileService {
     }
 
     @Transactional
-    public void updateUserProfile(String username, UpdateUserProfileDTO userProfileUpdateRequest) {
+    public void updateUserProfile( UpdateUserProfileDTO userProfileUpdateRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
