@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/users")
 public class UserProfileController {
@@ -13,11 +16,11 @@ public class UserProfileController {
     private UserProfileService userProfileService;
 
     @PreAuthorize("hasAuthority('ROLE_CREATE_PROFILE')")
-    @PostMapping("/{username}/profiles")
+    @PostMapping("/profiles")
     public ResponseEntity<String> createUserProfile(
             @PathVariable String username,
             @Valid @RequestBody UserProfileRequestDTO userProfileRequest) {
-        UserProfile userProfile = userProfileService.createUserProfile(username, userProfileRequest);
+        UserProfile userProfile = userProfileService.createUserProfile(userProfileRequest);
         return ResponseEntity.ok("User profile created successfully.");
     }
 
@@ -29,5 +32,18 @@ public class UserProfileController {
         userProfileService.updateUserProfile(userProfileUpdateRequest);
         return ResponseEntity.ok("User profile updated successfully.");
     }
+
+    @PreAuthorize("hasAuthority('ROLE_VIEW_USER_INFO')")
+    @GetMapping("/profiles")
+    public ResponseEntity<Map<String, Boolean>> updateUserProfile() {
+        boolean isUserProfile = userProfileService.checkUserProfile();
+
+        // Create a Map to hold the JSON response
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("is_user_profile_completed", isUserProfile);
+
+        return ResponseEntity.ok(response);
+    }
+
 
 }
