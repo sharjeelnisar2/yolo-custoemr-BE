@@ -19,7 +19,7 @@ public class Idea {
     @Column(name = "title", length = 64, nullable = false)
     private String title;
 
-    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "description", length = 128, columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(name = "code", length = 8, unique = true, nullable = false)
@@ -30,7 +30,7 @@ public class Idea {
     private IdeaStatus ideaStatus;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -49,15 +49,6 @@ public class Idea {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Defensive copy of mutable internal state
-    public IdeaStatus getIdeaStatus() {
-        return ideaStatus != null ? new IdeaStatus(ideaStatus) : null;
-    }
-
-    public void setIdeaStatus(IdeaStatus ideaStatus) {
-        this.ideaStatus = ideaStatus != null ? new IdeaStatus(ideaStatus) : null;
-    }
-
     // Copy constructor
     public Idea(Idea other) {
         if (other != null) {
@@ -65,7 +56,7 @@ public class Idea {
             this.title = other.title;
             this.description = other.description;
             this.code = other.code;
-            this.ideaStatus = other.ideaStatus != null ? new IdeaStatus(other.ideaStatus) : null;
+            this.ideaStatus = other.ideaStatus;
             this.userId = other.userId;
             this.createdAt = other.createdAt;
             this.updatedAt = other.updatedAt;

@@ -31,7 +31,7 @@ public class OrderService {
         User loggedInUser = userRepository.findByUsername(username);
 
         if(loggedInUser == null) {
-            throw new IllegalArgumentException("User with given username doesnot exists: " + username);
+            throw new IllegalArgumentException("User with given username does not exists: " + username);
         }
 
         if (page < 0) {

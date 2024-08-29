@@ -69,7 +69,6 @@ public class OrderController {
             @RequestParam(name = "status", required = false) String status) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(username);
 
         try {
             List<Order> orders = orderService.findAll(page, size, status, username);

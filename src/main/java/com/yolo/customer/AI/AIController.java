@@ -1,61 +1,85 @@
 package com.yolo.customer.AI;
 
+import com.yolo.customer.utils.ErrorResponse;
+import com.yolo.customer.utils.ResponseObject;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.anthropic.AnthropicChatModel;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @CrossOrigin
 @RestController
 public class AIController {
 
     private final AnthropicChatModel chatModel;
+    private final AIService aiService;
 
     @Autowired
-    public AIController(AnthropicChatModel chatModel) {
+    public AIController(AnthropicChatModel chatModel, AIService aiService) {
         this.chatModel = chatModel;
+        this.aiService = aiService;
     }
 
     @PostMapping("/ai/generate")
-    public Map<String, Object> generate(@RequestBody AIRequest requestBody) {
-        String prompt = PromptBuilder.buildPrompt(requestBody);
+    public ResponseEntity<?> generate(@RequestBody AIRequest requestBody) {
+        try {
+            String interests = String.join(", ", requestBody.getInterests());
+            String dietaryRestrictions = String.join(", ", requestBody.getDietaryRestrictions());
 
-        String result = chatModel.call(prompt);
+            // Check the prompt processing limit for the user
+            aiService.processPrompt(interests, dietaryRestrictions);
 
-        String title = "";
-        String description = "";
+            // Build the AI prompt
+            String prompt = PromptBuilder.buildPrompt(requestBody);
 
-        // Regular expression to extract the title and description from the response
-        Pattern pattern = Pattern.compile("Title:\\s*\"(.*?)\"\\s*Description:\\s*(.*)", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(result);
+            // Call the AI model with the prompt
+            String result = chatModel.call(prompt);
 
-        if (matcher.find()) {
-            title = matcher.group(1).trim(); // Extract the title
-            description = matcher.group(2).trim(); // Extract the description
+            String title = "";
+            String description = "";
+
+            // Regular expression to extract the title and description from the response
+            Pattern pattern = Pattern.compile("Title:\\s*\"(.*?)\"\\s*Description:\\s*(.*)", Pattern.DOTALL);
+            Matcher matcher = pattern.matcher(result);
+
+            if (matcher.find()) {
+                title = matcher.group(1).trim(); // Extract the title
+                description = matcher.group(2).trim(); // Extract the description
+            }
+
+            return ResponseEntity.ok(new ResponseObject<>(true, "idea", Map.of(
+                    "title", title,
+                    "description", description
+            )));
+        } catch (IllegalArgumentException e) {
+            log.warn("Illegal argument: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
+        } catch (Exception ex) {
+            log.error("Internal server error: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
         }
-
-        return Map.of("idea", Map.of(
-                "title", title,
-                "description", description
-        ));
     }
 
-
-    @GetMapping("/ai/generateStream")
-    public Flux<ChatResponse> generateStream(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
-        Prompt prompt = new Prompt(new UserMessage(message));
-        return chatModel.stream(prompt);
+    @GetMapping("/ai/max-limit")
+    public ResponseEntity<?> getMaxLimit() {
+        try {
+            int maxLimit = aiService.getMaxLimit();
+            return ResponseEntity.ok(new ResponseObject<>(true, "maxLimit", maxLimit));
+        } catch (Exception ex) {
+            log.error("Internal server error: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
+        }
     }
 }

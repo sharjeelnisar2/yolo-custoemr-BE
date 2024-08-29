@@ -9,7 +9,7 @@ public class IdeaStatusService {
     @Autowired
     private IdeaStatusRepository ideaStatusRepository;
 
-    public Long findStatusIdByName(String status) {
+    public Integer findStatusIdByName(String status) {
         IdeaStatus ideaStatus = ideaStatusRepository.findByValue(status)
                 .orElseThrow(() -> new RuntimeException("Idea status '" + status + "' not found"));
         return ideaStatus.getId();
