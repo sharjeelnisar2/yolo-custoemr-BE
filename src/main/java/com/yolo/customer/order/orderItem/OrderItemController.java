@@ -22,18 +22,18 @@ public class OrderItemController {
     }
 
     //add pre-auth for vendor
-    @GetMapping("/users/orders/{id}/orderitems")
-    public ResponseEntity<?> getOrderItemList(@PathVariable("id") Integer orderID) {
-        try {
-            List<Map<String, Object>> orderItemsWithRecipes = orderItemService.getOrderItemsWithRecipeByOrderId(orderID);
-            if (orderItemsWithRecipes.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "No Order Items Found", "No order items found for the provided order ID."));
-            }
-            return ResponseEntity.ok(new ResponseObject<>(true, "orderItems", orderItemsWithRecipes));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
-        }
-    }
+//    @GetMapping("/users/orders/{id}/orderitems")
+//    public ResponseEntity<?> getOrderItemList(@PathVariable("id") Integer orderID) {
+//        try {
+//            List<Map<String, Object>> orderItemsWithRecipes = orderItemService.getOrderItemsWithRecipeByOrderId(orderID);
+//            if (orderItemsWithRecipes.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                        .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "No Order Items Found", "No order items found for the provided order ID."));
+//            }
+//            return ResponseEntity.ok(new ResponseObject<>(true, "orderItems", orderItemsWithRecipes));
+//        } catch (Exception ex) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
+//        }
+//    }
 }

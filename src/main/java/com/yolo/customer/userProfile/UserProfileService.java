@@ -53,6 +53,5 @@ public class UserProfileService {
 
         return userProfile;
 
-        return userProfile;
     }
 }

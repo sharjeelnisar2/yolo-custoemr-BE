@@ -3,6 +3,7 @@ package com.yolo.customer.order;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ public class VendorOrderRequest {
     @Getter
     @Setter
     public static class OrderDetails {
-        private long totalPrice;
+        private BigInteger totalPrice;
         private String currencyCode;
         private String orderCode;
         private String customerContactNumber;
@@ -35,7 +36,7 @@ public class VendorOrderRequest {
         @Setter
         public static class OrderItem {
             private int quantity;
-            private long price;
+            private BigInteger price;
             private String recipeCode;
         }
     }

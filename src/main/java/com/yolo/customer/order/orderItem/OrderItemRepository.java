@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
     Page<OrderItem> findByOrderIdOrderByCreatedAtDesc(Integer orderId, Pageable pageable);
+
 }

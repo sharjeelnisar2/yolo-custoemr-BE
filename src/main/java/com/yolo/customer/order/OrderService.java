@@ -2,16 +2,12 @@ package com.yolo.customer.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yolo.customer.enums.OrderStatusEnum;
+import com.yolo.customer.enums.Order_Status;
 import com.yolo.customer.order.orderItem.OrderItem;
 import com.yolo.customer.order.orderItem.OrderItemRepository;
 import com.yolo.customer.order.orderStatus.OrderStatus;
 import com.yolo.customer.order.orderStatus.OrderStatusRepository;
 import com.yolo.customer.recipe.RecipeRepository;
-
-import com.yolo.customer.enums.Order_Status;
-import com.yolo.customer.order.orderStatus.OrderStatus;
-import com.yolo.customer.order.orderStatus.OrderStatusRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,7 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,23 +26,18 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
-    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final OrderItemRepository orderItemRepository;
     private final RecipeRepository recipeRepository;
+    private final UserRepository userRepository;
 
-
-    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository, RecipeRepository recipeRepository){
+    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository, RecipeRepository recipeRepository, UserRepository userRepository){
         this.orderRepository=orderRepository;
         this.orderStatusRepository=orderStatusRepository;
         this.orderItemRepository = orderItemRepository;
         this.recipeRepository = recipeRepository;
-
-    public OrderService(UserRepository userRepository, OrderRepository orderRepository, OrderStatusRepository orderStatusRepository) {
         this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
-        this.orderStatusRepository = orderStatusRepository;
     }
 
     public List<Order> findAll(Integer page, Integer size, String status, String username) {
@@ -81,9 +72,6 @@ public class OrderService {
                 throw new IllegalArgumentException("Invalid order status: " + status);
             }
 
-            System.out.println(orderStatusEnum);
-            OrderStatus statusObj = orderStatusRepository.findIdByCode(orderStatusEnum.toString());
-
             OrderStatus statusObj = orderStatusRepository.findByCode(orderStatus.toString());
             if (statusObj == null) {
                 throw new EntityNotFoundException("No status found for: " + status);
@@ -95,6 +83,28 @@ public class OrderService {
             throw new EntityNotFoundException("No orders found with the given criteria.");
         }
         return pageOrders.getContent();
+    }
+
+    public void updateOrderStatus(String orderCode, String statusString) {
+        Order order = orderRepository.findByCode(orderCode);
+        if (order == null) {
+            throw new EntityNotFoundException("Order not found with code: " + orderCode);
+        }
+
+        Order_Status orderStatusEnum;
+        try {
+            orderStatusEnum = Order_Status.valueOf(statusString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid order status: " + statusString);
+        }
+
+        OrderStatus orderStatus = orderStatusRepository.findByCode(orderStatusEnum.toString());
+        if (orderStatus == null) {
+            throw new EntityNotFoundException("No status found for: " + orderStatusEnum);
+        }
+
+        order.setOrderStatusId(orderStatus.getId());
+        orderRepository.save(order);
     }
 
     @Transactional
@@ -110,7 +120,7 @@ public class OrderService {
             throw new IllegalArgumentException("Order items must not be null or empty.");
         }
 
-        if (orderDto.getTotalPrice() < 0) {
+        if (orderDto.getTotalPrice().compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("Total price must not be less than 0.");
         }
 
@@ -118,13 +128,14 @@ public class OrderService {
             if (itemDto.getQuantity() < 1) {
                 throw new IllegalArgumentException("Quantity must not be less than 1");
             }
-            if (itemDto.getPrice() < 0) {
+            if (itemDto.getPrice().compareTo(BigInteger.ZERO) < 0) {
                 throw new IllegalArgumentException("Price must not be less than 0");
             }
         }
 
         String orderCode = generateUniqueCode();
-        Long totalPrice = orderDto.getTotalPrice();
+
+        BigInteger totalPrice = orderDto.getTotalPrice();
 
         Order order = new Order();
         order.setCode(orderCode);
@@ -165,7 +176,7 @@ public class OrderService {
     }
 
 
-    private boolean callVendorApi(String orderCode, Long totalPrice, List<OrderItem> orderItems) {
+    private boolean callVendorApi(String orderCode, BigInteger totalPrice, List<OrderItem> orderItems) {
         // Dummy data for customer details
         String customerContactNumber = "+1234567890";
         VendorOrderRequest.OrderDetails.Address address = new VendorOrderRequest.OrderDetails.Address();
@@ -206,21 +217,14 @@ public class OrderService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return false; // Simulate failure if request processing fails
-
-        Order_Status orderStatusEnum;
-        try {
-            orderStatusEnum = Order_Status.valueOf(statusString.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid order status: " + statusString);
         }
 
         // Simulate success
         return true;
     }
 
-
-
     private String generateUniqueCode() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
+
 }

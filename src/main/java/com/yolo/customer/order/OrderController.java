@@ -3,6 +3,7 @@ package com.yolo.customer.order;
 import com.yolo.customer.utils.ErrorResponse;
 import com.yolo.customer.utils.ResponseObject;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 
 @Slf4j
 @CrossOrigin
@@ -19,16 +22,10 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService){
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
-    @PatchMapping("/users/orders/{order_code}")
-    public ResponseEntity<?> updateOrder(@PathVariable Integer trackingID){
-        return null;
-    }
 
-
-    //add preauthorize
     //@PreAuthorize("hasAuthority('')")//use vendor side role here
     @PatchMapping("/users/orders/{order_code}")
     public ResponseEntity<?> updateOrder(
@@ -79,11 +76,13 @@ public class OrderController {
                     .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
         } catch (IllegalArgumentException e) {
             log.warn("Illegal argument: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
+            return ResponseEntity.badRequest()
+                    .body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
         } catch (Exception ex) {
             log.error("Internal server error: {}", ex.getMessage(), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
+                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+                            ex.getMessage()));
         }
     }
 
@@ -106,4 +105,5 @@ public class OrderController {
                     .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
         }
     }
+
 }

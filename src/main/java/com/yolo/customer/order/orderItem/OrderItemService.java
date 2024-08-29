@@ -19,10 +19,10 @@ public class OrderItemService {
         this.recipeRepository = recipeRepository;
     }
 
-    public List<Map<String, Object>> getOrderItemsWithRecipeByOrderId(Integer orderId) {
-        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
-        return orderItems.stream().map(this::mapToOrderItemWithRecipe).toList();
-    }
+//    public List<Map<String, Object>> getOrderItemsWithRecipeByOrderId(Integer orderId) {
+//        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+//        return orderItems.stream().map(this::mapToOrderItemWithRecipe).toList();
+//    }
 
     private Map<String, Object> mapToOrderItemWithRecipe(OrderItem orderItem) {
         Recipe recipe = recipeRepository.findById(orderItem.getRecipeId())
