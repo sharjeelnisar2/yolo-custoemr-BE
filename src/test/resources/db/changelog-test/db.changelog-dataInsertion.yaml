@@ -6,9 +6,7 @@ databaseChangeLog:
         - insert:
             tableName: address
             columns:
-              - column:
-                  name: id
-                  value: 1
+
               - column:
                   name: house
                   value: House 1
@@ -42,9 +40,6 @@ databaseChangeLog:
             tableName: user
             columns:
               - column:
-                  name: id
-                  value: 1
-              - column:
                   name: username
                   value: admin
               - column:
@@ -67,9 +62,6 @@ databaseChangeLog:
         - insert:
             tableName: user_profile
             columns:
-              - column:
-                  name: id
-                  value: 1
               - column:
                   name: first_name
                   value: John
@@ -102,9 +94,7 @@ databaseChangeLog:
         - insert:
             tableName: idea
             columns:
-              - column:
-                  name: id
-                  value: 1
+
               - column:
                   name: title
                   value: Healthy Salad
@@ -134,9 +124,7 @@ databaseChangeLog:
         - insert:
             tableName: interest
             columns:
-              - column:
-                  name: id
-                  value: 1
+
               - column:
                   name: description
                   value: High Protein
@@ -157,9 +145,7 @@ databaseChangeLog:
         - insert:
             tableName: dietary_restriction
             columns:
-              - column:
-                  name: id
-                  value: 1
+
               - column:
                   name: description
                   value: Nut-Free
@@ -180,9 +166,7 @@ databaseChangeLog:
         - insert:
             tableName: recipe
             columns:
-              - column:
-                  name: id
-                  value: 1
+
               - column:
                   name: name
                   value: Quinoa Salad
@@ -218,9 +202,7 @@ databaseChangeLog:
         - insert:
             tableName: recipe_image
             columns:
-              - column:
-                  name: id
-                  value: 1
+              -
               - column:
                   name: url
                   value: https://example.com/images/quinoa_salad.jpg
@@ -241,9 +223,7 @@ databaseChangeLog:
         - insert:
             tableName: orders
             columns:
-              - column:
-                  name: id
-                  value: 1
+
               - column:
                   name: price
                   value: 1000
@@ -270,9 +250,7 @@ databaseChangeLog:
         - insert:
             tableName: order_item
             columns:
-              - column:
-                  name: id
-                  value: 1
+
               - column:
                   name: quantity
                   value: 2

@@ -28,7 +28,7 @@ public class OrderService {
 
     public List<Order> findAll(Integer page, Integer size, String status, String username) {
 
-        User loggedInUser = userRepository.findByUsername(username);
+        User loggedInUser = userRepository.findByUsername(username).get();
 
         if(loggedInUser == null) {
             throw new IllegalArgumentException("User with given username doesnot exists: " + username);
