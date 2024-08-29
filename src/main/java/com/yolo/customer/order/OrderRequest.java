@@ -18,9 +18,9 @@ public class OrderRequest {
     public static class OrderDto {
         private BigInteger totalPrice;
         private String currencyCode;
-        private List<OrderItemDto> orderItems = new ArrayList<>(); // Initialize with an empty list
+        private List<OrderItemDto> orderItems = new ArrayList<>();
 
-        // Alternatively, you can ensure non-null list in the setter
+        // Ensure non-null list
         public void setOrderItems(List<OrderItemDto> orderItems) {
             this.orderItems = orderItems != null ? orderItems : new ArrayList<>();
         }
@@ -32,5 +32,6 @@ public class OrderRequest {
         private int quantity;
         private BigInteger price;
         private int recipeId;
+        private String chefName; // Added chefName here
     }
 }

@@ -25,7 +25,7 @@ public class VendorOrderRequest {
         @Setter
         public static class Address {
             private String house;
-            private int street;
+            private String street;
             private String area;
             private String zipCode;
             private String city;

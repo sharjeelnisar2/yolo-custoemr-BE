@@ -2,10 +2,14 @@ package com.yolo.customer.recipe;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity(name="recipe")
 public class Recipe {
     @Id
@@ -21,7 +25,7 @@ public class Recipe {
     @Column(name = "serving_size")
     private Integer servingSize;
 
-    @Column(name = "chef_code", unique = true, length = 8)
+    @Column(name = "chef_code", length = 8)
     private String chefCode;
 
     @Column(name = "chef_name", nullable = false)

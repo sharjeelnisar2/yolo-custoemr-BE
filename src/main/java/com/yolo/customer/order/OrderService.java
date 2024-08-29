@@ -7,9 +7,13 @@ import com.yolo.customer.order.orderItem.OrderItem;
 import com.yolo.customer.order.orderItem.OrderItemRepository;
 import com.yolo.customer.order.orderStatus.OrderStatus;
 import com.yolo.customer.order.orderStatus.OrderStatusRepository;
+import com.yolo.customer.recipe.Recipe;
 import com.yolo.customer.recipe.RecipeRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
+import com.yolo.customer.address.Address;
+import com.yolo.customer.address.AddressRepository;
+import com.yolo.customer.userProfile.UserProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -18,9 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,13 +33,18 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final AddressRepository addressRepository;
 
-    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository, RecipeRepository recipeRepository, UserRepository userRepository){
+    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository,
+                        RecipeRepository recipeRepository, UserRepository userRepository,  UserProfileRepository userProfileRepository, AddressRepository addressRepository){
         this.orderRepository=orderRepository;
         this.orderStatusRepository=orderStatusRepository;
         this.orderItemRepository = orderItemRepository;
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
+        this.addressRepository = addressRepository;
     }
 
     public List<Order> findAll(Integer page, Integer size, String status, String username) {
@@ -110,91 +117,105 @@ public class OrderService {
     @Transactional
     public boolean placeOrder(OrderRequest orderRequest) {
         OrderRequest.OrderDto orderDto = orderRequest.getOrder();
-        System.out.println("OrderDto: " + orderDto);
 
         if (orderDto == null) {
-            throw new IllegalArgumentException("Order cannot be null.");
+            throw new IllegalArgumentException("Order cannot be empty.");
         }
 
         if (orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
-            throw new IllegalArgumentException("Order items must not be null or empty.");
+            throw new IllegalArgumentException("Order items must not be empty.");
         }
 
-        if (orderDto.getTotalPrice().compareTo(BigInteger.ZERO) < 0) {
-            throw new IllegalArgumentException("Total price must not be less than 0.");
-        }
+        Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode = groupOrderItemsByChefCode(orderDto);
 
-        for (OrderRequest.OrderItemDto itemDto : orderDto.getOrderItems()) {
-            if (itemDto.getQuantity() < 1) {
-                throw new IllegalArgumentException("Quantity must not be less than 1");
-            }
-            if (itemDto.getPrice().compareTo(BigInteger.ZERO) < 0) {
-                throw new IllegalArgumentException("Price must not be less than 0");
-            }
-        }
+        // Create orders
+        List<VendorOrderRequest.OrderDetails> vendorOrders = createOrdersAndPrepareVendorOrders(itemsByChefCode);
 
-        String orderCode = generateUniqueCode();
-
-        BigInteger totalPrice = orderDto.getTotalPrice();
-
-        Order order = new Order();
-        order.setCode(orderCode);
-        order.setPrice(totalPrice);
-        order.setOrderStatusId(1);
-        order.setUserId(1);
-
-        Order savedOrder = orderRepository.save(order);
-        System.out.println("Saved Order: " + savedOrder);
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderRequest.OrderItemDto itemDto : orderDto.getOrderItems()) {
-            if (recipeRepository.existsById(itemDto.getRecipeId())) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setQuantity(itemDto.getQuantity());
-                orderItem.setPrice(itemDto.getPrice());
-                orderItem.setRecipeId(itemDto.getRecipeId());
-                orderItem.setOrderId(order.getId());
-                OrderItem savedOrderItem = orderItemRepository.save(orderItem);
-                System.out.println("Saved OrderItem: " + savedOrderItem);
-                orderItems.add(orderItem);
-            } else {
-                throw new EntityNotFoundException("Recipe with ID " + itemDto.getRecipeId() + " does not exist.");
-            }
-        }
-
-        System.out.println("Order Items: " + orderItems);
-
-        // Call the vendor API with the generated order code and order items
-        boolean vendorApiSuccess = callVendorApi(orderCode, totalPrice, orderItems);
-
+        boolean vendorApiSuccess = callVendorApi(vendorOrders);
         if (!vendorApiSuccess) {
-            // Throw an exception to trigger transaction rollback
-            throw new RuntimeException("Vendor API call failed. Rolling back transaction.");
+            throw new RuntimeException("Vendor API call failed. ");
         }
 
         return true;
     }
 
+    private Map<String, List<OrderRequest.OrderItemDto>> groupOrderItemsByChefCode(OrderRequest.OrderDto orderDto) {
+        Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode = new HashMap<>();
 
-    private boolean callVendorApi(String orderCode, BigInteger totalPrice, List<OrderItem> orderItems) {
-        // Dummy data for customer details
-        String customerContactNumber = "+1234567890";
-        VendorOrderRequest.OrderDetails.Address address = new VendorOrderRequest.OrderDetails.Address();
-        address.setHouse("123");
-        address.setStreet(456);
-        address.setArea("Downtown");
-        address.setZipCode("string");
-        address.setCity("Metropolis");
-        address.setCountry("US");
+        for (OrderRequest.OrderItemDto itemDto : orderDto.getOrderItems()) {
+            Optional<Recipe> recipeOpt = recipeRepository.findById(itemDto.getRecipeId());
+            if (recipeOpt.isPresent()) {
+                Recipe recipe = recipeOpt.get();
+                String chefCode = recipe.getChefCode();
+                itemsByChefCode.computeIfAbsent(chefCode, k -> new ArrayList<>()).add(itemDto);
+            } else {
+                throw new EntityNotFoundException("Recipe with ID " + itemDto.getRecipeId() + " does not exist.");
+            }
+        }
 
+        return itemsByChefCode;
+    }
+
+
+    private List<VendorOrderRequest.OrderDetails> createOrdersAndPrepareVendorOrders(Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode) {
+        List<VendorOrderRequest.OrderDetails> vendorOrders = new ArrayList<>();
+
+        for (Map.Entry<String, List<OrderRequest.OrderItemDto>> entry : itemsByChefCode.entrySet()) {
+            String chefCode = entry.getKey();
+            List<OrderRequest.OrderItemDto> items = entry.getValue();
+
+            BigInteger totalPrice = calculateTotalPrice(items);
+
+            String orderCode = generateUniqueCode();
+
+            Order order = new Order();
+            order.setCode(orderCode);
+            order.setPrice(totalPrice);
+            order.setOrderStatusId(1);
+            order.setUserId(2);
+
+            Order savedOrder = orderRepository.save(order);
+
+            for (OrderRequest.OrderItemDto itemDto : items) {
+                OrderItem orderItem = new OrderItem();
+                orderItem.setQuantity(itemDto.getQuantity());
+                orderItem.setPrice(itemDto.getPrice());
+                orderItem.setRecipeId(itemDto.getRecipeId());
+                orderItem.setOrderId(savedOrder.getId());
+                orderItemRepository.save(orderItem);
+            }
+
+            // Prepare order details for vendor API
+            VendorOrderRequest.OrderDetails orderDetails = prepareVendorOrderDetails(orderCode, totalPrice, items);
+            vendorOrders.add(orderDetails);
+        }
+
+        return vendorOrders;
+    }
+
+    private VendorOrderRequest.OrderDetails prepareVendorOrderDetails(String orderCode, BigInteger totalPrice, List<OrderRequest.OrderItemDto> items) {
         VendorOrderRequest.OrderDetails orderDetails = new VendorOrderRequest.OrderDetails();
         orderDetails.setTotalPrice(totalPrice);
-        orderDetails.setCurrencyCode("USD");
+        orderDetails.setCurrencyCode("USD"); // Or use orderDto.getCurrencyCode() if available
         orderDetails.setOrderCode(orderCode);
-        orderDetails.setCustomerContactNumber(customerContactNumber);
-        orderDetails.setAddress(address);
+        orderDetails.setCustomerContactNumber("+1234567890"); // This should be fetched from userProfile if needed
 
-        List<VendorOrderRequest.OrderDetails.OrderItem> vendorOrderItems = orderItems.stream()
+
+        int userId = 1;
+        Address address = addressRepository.findById(userId).orElseThrow(() ->
+                new RuntimeException("Address not found for userId: " + userId));
+
+        VendorOrderRequest.OrderDetails.Address vendorAddress = new VendorOrderRequest.OrderDetails.Address();
+        vendorAddress.setHouse(address.getHouse());
+        vendorAddress.setStreet(address.getStreet());
+        vendorAddress.setArea(address.getArea());
+        vendorAddress.setZipCode(address.getZipCode());
+        vendorAddress.setCity(address.getCity());
+        vendorAddress.setCountry(address.getCountry());
+
+        orderDetails.setAddress(vendorAddress);
+
+        List<VendorOrderRequest.OrderDetails.OrderItem> vendorOrderItems = items.stream()
                 .map(item -> {
                     VendorOrderRequest.OrderDetails.OrderItem vendorItem = new VendorOrderRequest.OrderDetails.OrderItem();
                     vendorItem.setQuantity(item.getQuantity());
@@ -206,22 +227,36 @@ public class OrderService {
 
         orderDetails.setOrderItems(vendorOrderItems);
 
-        VendorOrderRequest vendorOrderRequest = new VendorOrderRequest();
-        vendorOrderRequest.setOrder(orderDetails);
+        return orderDetails;
+    }
 
-        try {
-            String requestBody = new ObjectMapper()
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(vendorOrderRequest);
-            System.out.println("Vendor API Request body: " + requestBody);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return false; // Simulate failure if request processing fails
+    private boolean callVendorApi(List<VendorOrderRequest.OrderDetails> orders) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        for (VendorOrderRequest.OrderDetails orderDetails : orders) {
+            try {
+                String requestBody = objectMapper
+                        .writerWithDefaultPrettyPrinter()
+                        .writeValueAsString(orderDetails);
+                System.out.println("Vendor API Request body: " + requestBody);
+
+                // Simulate sending the request to the vendor API
+
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
 
-        // Simulate success
         return true;
     }
+
+    private BigInteger calculateTotalPrice(List<OrderRequest.OrderItemDto> items) {
+        return items.stream()
+                .map(OrderRequest.OrderItemDto::getPrice)
+                .reduce(BigInteger.ZERO, BigInteger::add);
+    }
+
 
     private String generateUniqueCode() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
