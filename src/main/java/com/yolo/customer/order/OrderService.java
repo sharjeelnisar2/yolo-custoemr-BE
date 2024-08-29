@@ -8,6 +8,12 @@ import com.yolo.customer.order.orderItem.OrderItemRepository;
 import com.yolo.customer.order.orderStatus.OrderStatus;
 import com.yolo.customer.order.orderStatus.OrderStatusRepository;
 import com.yolo.customer.recipe.RecipeRepository;
+
+import com.yolo.customer.enums.Order_Status;
+import com.yolo.customer.order.orderStatus.OrderStatus;
+import com.yolo.customer.order.orderStatus.OrderStatusRepository;
+import com.yolo.customer.user.User;
+import com.yolo.customer.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -24,19 +30,33 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
+    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final OrderItemRepository orderItemRepository;
     private final RecipeRepository recipeRepository;
+
 
     public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository, RecipeRepository recipeRepository){
         this.orderRepository=orderRepository;
         this.orderStatusRepository=orderStatusRepository;
         this.orderItemRepository = orderItemRepository;
         this.recipeRepository = recipeRepository;
+
+    public OrderService(UserRepository userRepository, OrderRepository orderRepository, OrderStatusRepository orderStatusRepository) {
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.orderStatusRepository = orderStatusRepository;
     }
 
-    public List<Order> findAll(Integer page, Integer size, String status) {
+    public List<Order> findAll(Integer page, Integer size, String status, String username) {
+
+        User loggedInUser = userRepository.findByUsername(username).get();
+
+        if(loggedInUser == null) {
+            throw new IllegalArgumentException("User with given username doesnot exists: " + username);
+        }
+
         if (page < 0) {
             throw new IllegalArgumentException("Page index must not be less than zero.");
         }
@@ -47,24 +67,28 @@ public class OrderService {
             size = 1000;
         }
 
+        Integer userId= loggedInUser.getId();
         Pageable paging = PageRequest.of(page, size);
         Page<Order> pageOrders;
 
         if (status == null || status.isEmpty()) {
-            pageOrders = orderRepository.findAll(paging);
+            pageOrders = orderRepository. findByUserIdOrderByCreatedAtDesc(userId,paging);
         } else {
-            OrderStatusEnum orderStatusEnum;
+            Order_Status orderStatus;
             try {
-                orderStatusEnum = OrderStatusEnum.valueOf(status.toUpperCase());
+                orderStatus = Order_Status.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid order status: " + status);
             }
+
             System.out.println(orderStatusEnum);
             OrderStatus statusObj = orderStatusRepository.findIdByCode(orderStatusEnum.toString());
+
+            OrderStatus statusObj = orderStatusRepository.findByCode(orderStatus.toString());
             if (statusObj == null) {
                 throw new EntityNotFoundException("No status found for: " + status);
             }
-            pageOrders = orderRepository.findByOrderStatusId(statusObj.getId(), paging);
+            pageOrders = orderRepository.findByOrderStatusIdAndUserIdOrderByCreatedAtDesc(statusObj.getId(), userId ,paging);
         }
 
         if (pageOrders.isEmpty()) {
@@ -182,6 +206,12 @@ public class OrderService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return false; // Simulate failure if request processing fails
+
+        Order_Status orderStatusEnum;
+        try {
+            orderStatusEnum = Order_Status.valueOf(statusString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid order status: " + statusString);
         }
 
         // Simulate success

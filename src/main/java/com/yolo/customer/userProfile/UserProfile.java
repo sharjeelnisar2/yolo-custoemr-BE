@@ -1,4 +1,4 @@
-package com.yolo.customer.user;
+package com.yolo.customer.userProfile;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,20 +8,29 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name="\"user\"")
-public class User {
+@Entity
+public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
-    @Column(name = "username", length = 16, nullable = false)
-    private String username;
+    @Column(name = "first_name", nullable = false, length = 16)
+    private String firstName;
 
-    @Column(name = "email", length = 64, nullable = false, unique = true)
-    private String email;
+    @Column(name = "last_name", nullable = false, length = 16)
+    private String lastName;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @Column(name = "contact_number", nullable = false, length = 13)
+    private String contactNumber;
+
+    @Column(name = "user_id", nullable = false, unique = true)
+    private int userId;
+
+    @Column(name = "currency_id", nullable = false)
+    private int currencyId;
+
+    @Column(name = "address_id", nullable = false, unique = true)
+    private int addressId;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;

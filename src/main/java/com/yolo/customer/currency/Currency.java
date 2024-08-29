@@ -1,4 +1,4 @@
-package com.yolo.customer.user;
+package com.yolo.customer.currency;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,20 +8,20 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name="\"user\"")
-public class User {
+@Entity
+public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
-    @Column(name = "username", length = 16, nullable = false)
-    private String username;
+    @Column(name = "code", nullable = false, unique = true, length = 3)
+    private String code;
 
-    @Column(name = "email", length = 64, nullable = false, unique = true)
-    private String email;
+    @Column(name = "name", nullable = false, unique = true, length = 32)
+    private String name;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @Column(name = "symbol", nullable = false, length = 3)
+    private String symbol;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
