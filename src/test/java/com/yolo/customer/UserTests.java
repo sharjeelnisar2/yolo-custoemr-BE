@@ -29,7 +29,7 @@ public class UserTests {
     @BeforeEach
     public void setUp() {
         SecurityTestUtil.setJwtAuthenticationToken("admin",
-                Set.of("UPDATE_PROFILE"),
+                Set.of("UPDATE_PROFILE", "VIEW_USER_INFO"),
                 Map.of("preferred_username", "admin")
         );
     }
@@ -62,5 +62,14 @@ public class UserTests {
                         .content(userProfileUpdateJson))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("User profile updated successfully."));
+    }
+
+    @Test
+    @Order(3)
+    @WithMockUser(username = "admin", authorities = {"ROLE_VIEW_USER_INFO"})
+    public void testUserProfileExistSuccess() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/profiles")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

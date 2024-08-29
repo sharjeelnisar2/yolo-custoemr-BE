@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 public class UserProfileService {
 
@@ -107,6 +109,17 @@ public class UserProfileService {
         }
 
         userProfileRepository.save(existingProfile);
+    }
+
+    public boolean checkUserProfile(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+
+        Optional<UserProfile> userProfile = userProfileRepository.findByUserId(user.getId());
+        return userProfile.isPresent();
     }
 
 
