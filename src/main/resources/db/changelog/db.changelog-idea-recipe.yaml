@@ -139,6 +139,9 @@ databaseChangeLog:
                   constraints:
                     unique: true
               - column:
+                  name: chef_name
+                  type: VARCHAR(32)
+              - column:
                   name: idea_id
                   type: INT
                   constraints:
