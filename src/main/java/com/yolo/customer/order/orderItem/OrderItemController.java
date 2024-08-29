@@ -4,6 +4,7 @@ import com.yolo.customer.utils.ErrorResponse;
 import com.yolo.customer.utils.ResponseObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,7 @@ public class OrderItemController {
         this.orderItemService = orderItemService;
     }
 
-    //add pre-auth for vendor
+    @PreAuthorize("hasAuthority('ROLE_VIEW_ORDER_HISTORY_DETAIL')")
     @GetMapping("/users/orders/{id}/orderitems")
     public ResponseEntity<?> getOrderItemList(@PathVariable("id") Integer orderID) {
         try {
