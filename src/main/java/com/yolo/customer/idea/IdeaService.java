@@ -12,12 +12,14 @@ import com.yolo.customer.idea.interest.InterestRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
 import com.yolo.customer.utils.GetContextHolder;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 //import org.springframework.security.core.Authentication;
 //import org.springframework.security.core.context.SecurityContextHolder;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -58,14 +60,14 @@ public class IdeaService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = GetContextHolder.getUsernameFromAuthentication(authentication);
         User loggedInUser = userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("User with given username does not exist: " + username));
+                new EntityNotFoundException("User with given username does not exist: " + username));
 
         if (status == null || status.isEmpty()) {
-            throw new IllegalArgumentException("Status cannot be empty.");
+            throw new EntityNotFoundException("Status cannot be empty.");
         }
 
         Idea idea = ideaRepository.findById(ideaId)
-                .orElseThrow(() -> new RuntimeException("Idea with ID " + ideaId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Ideas not found"));
 
         if (!idea.getUserId().equals(loggedInUser.getId())) {
             throw new RuntimeException("Unauthorized to update idea.");
@@ -92,11 +94,8 @@ public class IdeaService {
 
 
     private boolean callVendorApi(Idea idea, String username) {
-
         IdeaDTO.IdeaDetails ideaDetails = new IdeaDTO.IdeaDetails();
-
         ideaDetails.setCustomer_name(username);
-
         ideaDetails.setTitle(idea.getTitle());
         ideaDetails.setDescription(idea.getDescription());
         ideaDetails.setIdea_code(idea.getCode());
@@ -108,7 +107,6 @@ public class IdeaService {
                 .collect(Collectors.toList());
         ideaDetails.setInterests(interests);
 
-        // Get dietary restrictions
         List<String> dietaryRestrictions = dietaryRestrictionRepository.findByIdeaId(idea.getId())
                 .stream()
                 .map(DietaryRestriction::getDescription)
@@ -120,17 +118,38 @@ public class IdeaService {
 
         // Prepare headers
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        //HttpEntity<IdeaDTO> request = new HttpEntity<>(ideaDTO, headers);
-        try {
-            String requestBody = new ObjectMapper()
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(ideaDTO);
-            System.out.println(requestBody);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace(); // Handle exception as needed
-        }
+        // Create HttpEntity
+        HttpEntity<IdeaDTO> requestEntity = new HttpEntity<>(ideaDTO, headers);
+
+        // Vendor API URL (Replace with actual URL and port)
+        String vendorApiUrl = "http://localhost:8081/api/v1/ideas";
+
+        // Create RestTemplate
+        RestTemplate restTemplate = new RestTemplate();
+
+//        try {
+//            // Send POST request
+//            ResponseEntity<String> response = restTemplate.exchange(
+//                    vendorApiUrl,
+//                    HttpMethod.POST,
+//                    requestEntity,
+//                    String.class
+//            );
+//
+//            // Check response status
+//            if (response.getStatusCode() == HttpStatus.CREATED) {
+//                return true; // Success
+//            } else {
+//                System.out.println("Unexpected response status: " + response.getStatusCode());
+//                return false; // Failed
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace(); // Handle exception as needed
+//            return false; // Failed
+//        }
+
         return true;
     }
 

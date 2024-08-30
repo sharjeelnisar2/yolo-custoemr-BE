@@ -141,6 +141,12 @@ public class OrderService {
             throw new IllegalArgumentException("Order items must not be empty.");
         }
 
+        for (OrderRequest.OrderItemDto item : orderDto.getOrderItems()) {
+            if (item.getPrice() == null || item.getPrice().compareTo(BigInteger.ZERO) < 0) {
+                throw new IllegalArgumentException("Price should not be less than 0.");
+            }
+        }
+
         Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode = groupOrderItemsByChefCode(orderDto);
 
         // Create orders

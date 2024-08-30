@@ -80,6 +80,7 @@ public class OrderController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_PLACE_ORDER')")
     @PostMapping("/users/orders")
     public ResponseEntity<?> placeOrder(@RequestBody OrderRequest orderRequest) {
         try {
