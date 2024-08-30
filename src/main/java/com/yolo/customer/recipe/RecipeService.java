@@ -1,5 +1,7 @@
 package com.yolo.customer.recipe;
 
+import com.yolo.customer.currency.Currency;
+import com.yolo.customer.currency.CurrencyRepository;
 import com.yolo.customer.idea.Idea;
 import com.yolo.customer.idea.IdeaRepository;
 import com.yolo.customer.recipe.dto.RecipeRequest;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -23,11 +26,14 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final RecipeImageRepository recipeImageRepository;
     private final IdeaRepository ideaRepository;
+    private final CurrencyRepository currencyRepository;
 
-    public RecipeService(RecipeRepository recipeRepository, RecipeImageRepository recipeImageRepository, IdeaRepository ideaRepository) {
+    public RecipeService(RecipeRepository recipeRepository, RecipeImageRepository recipeImageRepository, IdeaRepository ideaRepository,
+                         CurrencyRepository currencyRepository) {
         this.recipeRepository = recipeRepository;
         this.recipeImageRepository = recipeImageRepository;
         this.ideaRepository = ideaRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     @Transactional
@@ -53,10 +59,6 @@ public class RecipeService {
             pageRecipes = recipeRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, paging);
         }
 
-        if (pageRecipes.isEmpty()) {
-            throw new EntityNotFoundException(ApiMessages.NO_RECIPES_FOUND.getMessage());
-        }
-
         return pageRecipes.getContent().stream()
                 .map(recipe -> mapToRecipeResponse(recipe, paging))
                 .collect(Collectors.toList());
@@ -73,6 +75,10 @@ public class RecipeService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ApiMessages.IDEA_NOT_FOUND_BY_ID.getMessage(), recipe.getIdeaId())));
 
+        Currency currency = currencyRepository.findById(recipe.getCurrencyId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ApiMessages.CURRENCY_NOT_FOUND_BY_ID.getMessage(), recipe.getCurrencyId())));
+
         return new RecipeResponse(
                 recipe.getId(),
                 recipe.getName(),
@@ -81,7 +87,7 @@ public class RecipeService {
                 recipe.getPrice(),
                 idea.getCode(),
                 recipe.getCode(),
-                "USD",
+                currency.getCode(),
                 recipe.getChefCode(),
                 recipe.getChefName(),
                 recipe.getCreatedAt(),

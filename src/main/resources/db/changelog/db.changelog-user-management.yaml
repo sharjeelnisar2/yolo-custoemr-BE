@@ -55,7 +55,7 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: username
-                  type: VARCHAR(16)
+                  type: VARCHAR(64)
                   constraints:
                     nullable: false
               - column:
@@ -63,7 +63,6 @@ databaseChangeLog:
                   type: VARCHAR(64)
                   constraints:
                     unique: true
-                    nullable: false
               - column:
                   name: is_deleted
                   type: BOOLEAN

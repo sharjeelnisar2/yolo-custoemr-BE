@@ -22,3 +22,13 @@ databaseChangeLog:
               - column:
                   name: value
                   value: Submitted
+
+        - insert:
+            tableName: idea_status
+            columns:
+              - column:
+                  name: code
+                  value: ARCHIVE
+              - column:
+                  name: value
+                  value: Archive

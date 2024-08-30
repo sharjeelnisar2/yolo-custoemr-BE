@@ -73,8 +73,13 @@ public class RecipeTests {
                         .param("size", "10")
                         .param("ideaId", "9999")
                         .param("search", "nonExistentRecipe"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.recipes", Matchers.hasSize(0)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.recipes").isArray());
     }
+
 
     @Test
     @Order(3)

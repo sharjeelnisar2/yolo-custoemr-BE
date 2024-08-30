@@ -33,11 +33,9 @@ public class OrderService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = GetContextHolder.getUsernameFromAuthentication(authentication);
-        User loggedInUser = userRepository.findByUsername(username).get();
 
-        if(loggedInUser == null) {
-            throw new IllegalArgumentException("User with given username doesnot exists: " + username);
-        }
+        User loggedInUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
 
         if (page < 0) {
             throw new IllegalArgumentException("Page index must not be less than zero.");
@@ -63,36 +61,28 @@ public class OrderService {
                 throw new IllegalArgumentException("Invalid order status: " + status);
             }
 
-            OrderStatus statusObj = orderStatusRepository.findByCode(orderStatus.toString());
-            if (statusObj == null) {
-                throw new EntityNotFoundException("No status found for: " + status);
-            }
-            pageOrders = orderRepository.findByOrderStatusIdAndUserIdOrderByCreatedAtDesc(statusObj.getId(), userId ,paging);
-        }
+            OrderStatus statusObj = orderStatusRepository.findByCode(orderStatus.toString())
+                    .orElseThrow(() -> new EntityNotFoundException("No status found for: " + status));
 
-        if (pageOrders.isEmpty()) {
-            throw new EntityNotFoundException("No orders found with the given criteria.");
+            pageOrders = orderRepository.findByOrderStatusIdAndUserIdOrderByCreatedAtDesc(statusObj.getId(), userId ,paging);
         }
         return pageOrders.getContent();
     }
 
-    public void updateOrderStatus(String orderCode, String statusString) {
-        Order order = orderRepository.findByCode(orderCode);
-        if (order == null) {
-            throw new EntityNotFoundException("Order not found with code: " + orderCode);
-        }
+    public void updateOrderStatus(String orderCode, String status) {
+
+        Order order = orderRepository.findByCode(orderCode)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with code: " + orderCode));
 
         Order_Status orderStatusEnum;
         try {
-            orderStatusEnum = Order_Status.valueOf(statusString.toUpperCase());
+            orderStatusEnum = Order_Status.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid order status: " + statusString);
+            throw new IllegalArgumentException("Invalid order status: " + status);
         }
 
-        OrderStatus orderStatus = orderStatusRepository.findByCode(orderStatusEnum.toString());
-        if (orderStatus == null) {
-            throw new EntityNotFoundException("No status found for: " + orderStatusEnum);
-        }
+        OrderStatus orderStatus = orderStatusRepository.findByCode(orderStatusEnum.toString())
+                .orElseThrow(() -> new EntityNotFoundException("No status found for: " + status));
 
         order.setOrderStatusId(orderStatus.getId());
         orderRepository.save(order);

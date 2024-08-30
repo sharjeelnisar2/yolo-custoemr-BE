@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,11 +35,10 @@ public class RecipeController {
             @RequestParam(name = "search", required = false) String search) {
         try {
             List<RecipeResponse> recipeResponses = recipeService.findAll(page, size, ideaId, search);
+            if (recipeResponses.isEmpty()) {
+                return ResponseEntity.ok(new ResponseObject<>(true, "recipes", new ArrayList<>()));
+            }
             return ResponseEntity.ok(new ResponseObject<>(true, "recipes", recipeResponses));
-        } catch (EntityNotFoundException e) {
-            log.warn("Entity not found: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
         } catch (IllegalArgumentException e) {
             log.warn("Illegal argument: {}", e.getMessage());
             return ResponseEntity.badRequest().body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
