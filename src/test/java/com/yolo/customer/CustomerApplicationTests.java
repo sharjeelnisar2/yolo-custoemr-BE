@@ -1,10 +1,7 @@
 package com.yolo.customer;
 
+import org.junit.jupiter.api.*;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +11,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.security.test.context.support.WithMockUser;
+import util.SecurityTestUtil;
+
+import java.util.Map;
+import java.util.Set;
 
 
 @SpringBootTest
@@ -29,9 +30,16 @@ class CustomerApplicationTests {
 
 	}
 
+	@BeforeEach
+	public void setUp() {
+		SecurityTestUtil.setJwtAuthenticationToken("admin",
+				Set.of("VIEW_ORDER_HISTORY"),
+				Map.of("preferred_username", "admin")
+		);
+	}
+
 	@Order(1)
 	@Test
-	@WithMockUser(username = "admin", authorities = {"ROLE_VIEW_ORDER_HISTORY"} )
 	public void testGetOrderList() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/users/orders?page=0&size=10")
 						.contentType(MediaType.APPLICATION_JSON))
@@ -41,7 +49,6 @@ class CustomerApplicationTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.data.orders", Matchers.hasSize(Matchers.greaterThan(0))));
 	}
-
 
 	@Order(2)
 	@Test
@@ -58,6 +65,7 @@ class CustomerApplicationTests {
 
 	@Order(3)
 	@Test
+	@WithMockUser(username = "admin", authorities = {"ROLE_UPDATE_ORDER_STATUS"} )
 	public void testUpdateOrderStatus() throws Exception {
 		String updatePayload = "{\"order_status\":\"DISPATCHED\"}";
 
@@ -67,6 +75,6 @@ class CustomerApplicationTests {
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Order status updated successfully"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.data.orders").value("DISPATCHED"));
 	}
 }

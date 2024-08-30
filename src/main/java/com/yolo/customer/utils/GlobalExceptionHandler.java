@@ -4,9 +4,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,6 +34,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex) {
         return ErrorResponse.create(HttpStatus.BAD_REQUEST, "Error", ex.getReason());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return ErrorResponse.create(HttpStatus.BAD_REQUEST, "Validation error", errors.toString());
     }
 
     @ExceptionHandler(Exception.class)

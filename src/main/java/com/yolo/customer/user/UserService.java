@@ -29,7 +29,9 @@ public class UserService {
         }
         userDetails.put("roles", roles);
 
-        createUser(jwt.getClaim("preferred_username"), jwt.getClaim("email"));
+        if (!userRepository.existsByUsername(jwt.getClaim("preferred_username"))) {
+            createUser(jwt.getClaim("preferred_username"), jwt.getClaim("email"));
+        }
         return userDetails;
     }
 
@@ -60,7 +62,7 @@ public class UserService {
 
     private List<String> extractRolesFromJwt(Jwt jwt) {
         Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
-        Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("CustomerVue");
+        Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("Yolo-Customer");
         List<String> roles = (List<String>) clientRoles.get("roles");
 
         return roles.stream()

@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole('ROLE_VIEW_USER_INFO', 'ROLE_CREATE_ACCOUNT')")
+    @PreAuthorize("hasAuthority('ROLE_DECODE_USER_INFO', 'ROLE_CREATE_ACCOUNT')")
     @GetMapping("/jwtToken")
     public Map<String, Object> decodeJwt(Authentication authentication) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
@@ -31,12 +31,12 @@ public class UserController {
         return response;
     }
 
-//    @PreAuthorize("hasRole('ROLE_CREATE_USER')")
-//    @PostMapping
-//    public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
-//        userService.createUser(userRequest.getUsername(), userRequest.getEmail());
-//        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
-//    }
+    @PreAuthorize("hasRole('ROLE_CREATE_ACCOUNT')")
+    @PostMapping
+    public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
+        userService.createUser(userRequest.getUsername(), userRequest.getEmail());
+        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
+    }
 
 
 }
