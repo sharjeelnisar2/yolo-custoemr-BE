@@ -30,7 +30,7 @@ public class Idea {
     private IdeaStatus ideaStatus;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -14,12 +14,13 @@ public class VendorOrderRequest {
     @Getter
     @Setter
     public static class OrderDetails {
-        private BigInteger totalPrice;
-        private String currencyCode;
-        private String orderCode;
-        private String customerContactNumber;
+        private BigInteger total_price;
+        private String currency_code;
+        private String order_code;
+        private String customer_contact_number;
+        private String customer_name;
         private Address address;
-        private List<OrderItem> orderItems;
+        private List<OrderItem> order_items;
 
         @Getter
         @Setter
@@ -27,7 +28,7 @@ public class VendorOrderRequest {
             private String house;
             private String street;
             private String area;
-            private String zipCode;
+            private String zip_code;
             private String city;
             private String country;
         }
@@ -37,7 +38,7 @@ public class VendorOrderRequest {
         public static class OrderItem {
             private int quantity;
             private BigInteger price;
-            private String recipeCode;
+            private String recipe_code;
         }
     }
 }

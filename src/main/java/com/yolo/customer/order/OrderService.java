@@ -13,6 +13,7 @@ import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
 import com.yolo.customer.address.Address;
 import com.yolo.customer.address.AddressRepository;
+import com.yolo.customer.userProfile.UserProfile;
 import com.yolo.customer.userProfile.UserProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -121,6 +122,15 @@ public class OrderService {
 
     @Transactional
     public boolean placeOrder(OrderRequest orderRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+        User loggedInUser = userRepository.findByUsername(username).get();
+
+        if(loggedInUser == null) {
+            throw new IllegalArgumentException("User with given username doesnot exists: " + username);
+        }
+        Integer userId = loggedInUser.getId();
+
         OrderRequest.OrderDto orderDto = orderRequest.getOrder();
 
         if (orderDto == null) {
@@ -134,7 +144,7 @@ public class OrderService {
         Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode = groupOrderItemsByChefCode(orderDto);
 
         // Create orders
-        List<VendorOrderRequest.OrderDetails> vendorOrders = createOrdersAndPrepareVendorOrders(itemsByChefCode);
+        List<VendorOrderRequest.OrderDetails> vendorOrders = createOrdersAndPrepareVendorOrders(itemsByChefCode, userId);
 
         boolean vendorApiSuccess = callVendorApi(vendorOrders);
         if (!vendorApiSuccess) {
@@ -162,7 +172,8 @@ public class OrderService {
     }
 
 
-    private List<VendorOrderRequest.OrderDetails> createOrdersAndPrepareVendorOrders(Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode) {
+    private List<VendorOrderRequest.OrderDetails> createOrdersAndPrepareVendorOrders(Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode,
+                                                                                     Integer userId) {
         List<VendorOrderRequest.OrderDetails> vendorOrders = new ArrayList<>();
 
         for (Map.Entry<String, List<OrderRequest.OrderItemDto>> entry : itemsByChefCode.entrySet()) {
@@ -176,8 +187,8 @@ public class OrderService {
             Order order = new Order();
             order.setCode(orderCode);
             order.setPrice(totalPrice);
-            order.setOrderStatusId(1);
-            order.setUserId(2);
+            order.setOrderStatusId(1); //PENDING ENUM
+            order.setUserId(userId);
 
             Order savedOrder = orderRepository.save(order);
 
@@ -190,31 +201,39 @@ public class OrderService {
                 orderItemRepository.save(orderItem);
             }
 
-            // Prepare order details for vendor API
-            VendorOrderRequest.OrderDetails orderDetails = prepareVendorOrderDetails(orderCode, totalPrice, items);
+            VendorOrderRequest vendorOrderRequest = prepareVendorOrderDetails(userId, orderCode, totalPrice, items);
+            VendorOrderRequest.OrderDetails orderDetails = vendorOrderRequest.getOrder();
             vendorOrders.add(orderDetails);
         }
 
         return vendorOrders;
     }
 
-    private VendorOrderRequest.OrderDetails prepareVendorOrderDetails(String orderCode, BigInteger totalPrice, List<OrderRequest.OrderItemDto> items) {
+    private VendorOrderRequest prepareVendorOrderDetails(Integer uId, String orderCode, BigInteger totalPrice,
+                                                         List<OrderRequest.OrderItemDto> items) {
+
+        VendorOrderRequest vendorOrderRequest = new VendorOrderRequest();
+
         VendorOrderRequest.OrderDetails orderDetails = new VendorOrderRequest.OrderDetails();
-        orderDetails.setTotalPrice(totalPrice);
-        orderDetails.setCurrencyCode("USD"); // Or use orderDto.getCurrencyCode() if available
-        orderDetails.setOrderCode(orderCode);
-        orderDetails.setCustomerContactNumber("+1234567890"); // This should be fetched from userProfile if needed
+        orderDetails.setTotal_price(totalPrice);
 
+        UserProfile userProfile = userProfileRepository.findByUserId(uId).orElseThrow(() ->
+                new RuntimeException("User Profile not found for userId: " + uId));
 
-        int userId = 1;
-        Address address = addressRepository.findById(userId).orElseThrow(() ->
-                new RuntimeException("Address not found for userId: " + userId));
+        orderDetails.setCurrency_code("USD");
+        orderDetails.setOrder_code(orderCode);
+        orderDetails.setCustomer_name(userProfile.getFirstName());
+        orderDetails.setCustomer_contact_number(userProfile.getContactNumber());
 
+        Address address = addressRepository.findById(userProfile.getAddressId()).orElseThrow(() ->
+                new RuntimeException("Address not found for addressId: " + userProfile.getAddressId()));
+
+        // Map the Address entity to VendorOrderRequest.Address
         VendorOrderRequest.OrderDetails.Address vendorAddress = new VendorOrderRequest.OrderDetails.Address();
         vendorAddress.setHouse(address.getHouse());
         vendorAddress.setStreet(address.getStreet());
         vendorAddress.setArea(address.getArea());
-        vendorAddress.setZipCode(address.getZipCode());
+        vendorAddress.setZip_code(address.getZipCode());
         vendorAddress.setCity(address.getCity());
         vendorAddress.setCountry(address.getCountry());
 
@@ -225,14 +244,19 @@ public class OrderService {
                     VendorOrderRequest.OrderDetails.OrderItem vendorItem = new VendorOrderRequest.OrderDetails.OrderItem();
                     vendorItem.setQuantity(item.getQuantity());
                     vendorItem.setPrice(item.getPrice());
-                    vendorItem.setRecipeCode(String.valueOf(item.getRecipeId()));
+                    vendorItem.setRecipe_code(String.valueOf(item.getRecipeId()));
                     return vendorItem;
                 })
                 .collect(Collectors.toList());
 
-        orderDetails.setOrderItems(vendorOrderItems);
+        // Set the order items in order details
+        orderDetails.setOrder_items(vendorOrderItems);
 
-        return orderDetails;
+        // Assign the orderDetails to the vendorOrderRequest
+        vendorOrderRequest.setOrder(orderDetails);
+
+        // Return the complete VendorOrderRequest
+        return vendorOrderRequest;
     }
 
     private boolean callVendorApi(List<VendorOrderRequest.OrderDetails> orders) {
@@ -240,12 +264,13 @@ public class OrderService {
 
         for (VendorOrderRequest.OrderDetails orderDetails : orders) {
             try {
+                VendorOrderRequest vendorOrderRequest = new VendorOrderRequest();
+                vendorOrderRequest.setOrder(orderDetails);
+
                 String requestBody = objectMapper
                         .writerWithDefaultPrettyPrinter()
-                        .writeValueAsString(orderDetails);
-                System.out.println("Vendor API Request body: " + requestBody);
-
-                // Simulate sending the request to the vendor API
+                        .writeValueAsString(vendorOrderRequest);
+                System.out.println(requestBody);
 
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

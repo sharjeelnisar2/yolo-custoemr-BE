@@ -9,8 +9,13 @@ import com.yolo.customer.idea.ideaStatus.IdeaStatusService;
 import com.yolo.customer.idea.interest.Interest;
 import com.yolo.customer.idea.dietaryRestriction.DietaryRestriction;
 import com.yolo.customer.idea.interest.InterestRepository;
+import com.yolo.customer.user.User;
+import com.yolo.customer.user.UserRepository;
+import com.yolo.customer.utils.GetContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 //import org.springframework.security.core.Authentication;
@@ -42,10 +47,19 @@ public class IdeaService {
     @Autowired
     private DietaryRestrictionRepository dietaryRestrictionRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
 //    @Autowired
 //    private UserRepository userRepository;
 
     public ResponseEntity<Map<String, String>> submitIdeaToVendor(Integer ideaId, String status) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+        User loggedInUser = userRepository.findByUsername(username).orElseThrow(() ->
+                new IllegalArgumentException("User with given username does not exist: " + username));
+
         if (status == null || status.isEmpty()) {
             throw new IllegalArgumentException("Status cannot be empty.");
         }
@@ -53,7 +67,11 @@ public class IdeaService {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new RuntimeException("Idea with ID " + ideaId + " not found"));
 
-        boolean vendorApiSuccess = callVendorApi(idea);
+        if (!idea.getUserId().equals(loggedInUser.getId())) {
+            throw new RuntimeException("Unauthorized to update idea.");
+        }
+
+        boolean vendorApiSuccess = callVendorApi(idea, username);
 
         if (vendorApiSuccess) {
             Long statusId = ideaStatusService.findStatusIdByName(status);
@@ -72,21 +90,16 @@ public class IdeaService {
         }
     }
 
-    private boolean callVendorApi(Idea idea) {
+
+    private boolean callVendorApi(Idea idea, String username) {
 
         IdeaDTO.IdeaDetails ideaDetails = new IdeaDTO.IdeaDetails();
 
-//        User user = userRepository.findById(idea.getUserId())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//        ideaDetails.setCustomerName(user.getUsername());
+        ideaDetails.setCustomer_name(username);
 
-        String dummyUsername = "Ahmad";
-        ideaDetails.setCustomerName(dummyUsername);
-
-        // Get idea details
         ideaDetails.setTitle(idea.getTitle());
         ideaDetails.setDescription(idea.getDescription());
-        ideaDetails.setIdeaCode(idea.getCode());
+        ideaDetails.setIdea_code(idea.getCode());
 
         // Get interests
         List<String> interests = interestRepository.findByIdeaId(idea.getId())
@@ -100,7 +113,7 @@ public class IdeaService {
                 .stream()
                 .map(DietaryRestriction::getDescription)
                 .collect(Collectors.toList());
-        ideaDetails.setDietaryRestrictions(dietaryRestrictions);
+        ideaDetails.setDietary_restrictions(dietaryRestrictions);
 
         IdeaDTO ideaDTO = new IdeaDTO();
         ideaDTO.setIdea(ideaDetails);
@@ -114,7 +127,7 @@ public class IdeaService {
             String requestBody = new ObjectMapper()
                     .writerWithDefaultPrettyPrinter()
                     .writeValueAsString(ideaDTO);
-            System.out.println("Request body: " + requestBody);
+            System.out.println(requestBody);
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // Handle exception as needed
         }
@@ -137,7 +150,7 @@ public class IdeaService {
         Idea idea = new Idea();
         idea.setTitle(request.getTitle());
         idea.setDescription(request.getDescription());
-        idea.setUserId(1L); // Replace this with actual user ID
+        idea.setUserId(1); // Replace this with actual user ID
         idea.setCode(generateUniqueCode());
 
         // Set initial status for the idea

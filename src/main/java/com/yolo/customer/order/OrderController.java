@@ -7,9 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +21,6 @@ public class OrderController {
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
-    }
-
-    @PostMapping("/users/orders")
-    public ResponseEntity<?> createOrder(@RequestBody Order order){
-
-        return null;
     }
 
     //@PreAuthorize("hasAuthority('')")//use vendor side role here
@@ -86,6 +77,26 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
                             ex.getMessage()));
+        }
+    }
+
+    @PostMapping("/users/orders")
+    public ResponseEntity<?> placeOrder(@RequestBody OrderRequest orderRequest) {
+        try {
+
+            boolean isOrderPlaced = orderService.placeOrder(orderRequest);
+            return ResponseEntity.ok(new ResponseObject<>(true, "Order placed successfully", null));
+        } catch (EntityNotFoundException e) {
+            log.warn("Entity not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            log.warn("Illegal argument: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
+        } catch (Exception ex) {
+            log.error("Internal server error: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
         }
     }
 }
