@@ -16,6 +16,4 @@ public class IdeaResponse {
     private List<String> dietaryRestrictions;
     private String ideaStatus;
     private LocalDateTime createdAt;
-
-
 }
