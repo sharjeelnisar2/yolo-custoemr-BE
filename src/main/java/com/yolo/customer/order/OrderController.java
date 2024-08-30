@@ -32,7 +32,7 @@ public class OrderController {
         return null;
     }
 
-    //@PreAuthorize("hasAuthority('')")//use vendor side role here
+    @PreAuthorize("hasAuthority('ROLE_UPDATE_ORDER_STATUS')")
     @PatchMapping("/users/orders/{order_code}")
     public ResponseEntity<?> updateOrder(
             @PathVariable String order_code,
