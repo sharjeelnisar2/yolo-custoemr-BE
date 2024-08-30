@@ -4,8 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yolo.customer.idea.dietaryRestriction.DietaryRestriction;
 import com.yolo.customer.idea.dietaryRestriction.DietaryRestrictionRepository;
-import com.yolo.customer.idea.dto.DraftIdeaRequest;
 import com.yolo.customer.idea.dto.IdeaDTO;
+import com.yolo.customer.idea.dto.IdeaRequest;
+import com.yolo.customer.idea.dto.IdeaResponse;
 import com.yolo.customer.idea.ideaStatus.IdeaStatus;
 import com.yolo.customer.idea.ideaStatus.IdeaStatusRepository;
 import com.yolo.customer.idea.ideaStatus.IdeaStatusService;
@@ -13,12 +14,15 @@ import com.yolo.customer.idea.interest.Interest;
 import com.yolo.customer.idea.interest.InterestRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
+import com.yolo.customer.utils.GetContextHolder;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,9 +124,13 @@ public class IdeaService {
 
     @Transactional
     public Idea createDraftIdea(IdeaRequest request) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> loggedInUser = userRepository.findByUsername(username);
-        Integer userId = loggedInUser.get().getId();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+
+        User loggedInUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
+
+        Integer userId = loggedInUser.getId();
 
         List<String> interestsList = request.getInterests();
         if (interestsList == null || interestsList.isEmpty()) {
@@ -196,7 +204,6 @@ public class IdeaService {
             ideas = ideaRepository.findAll(pageable);
         }
 
-        // Map to IdeaResponse and include Interests and DietaryRestrictions
         return ideas.map(this::mapToIdeaResponse);
     }
 
@@ -218,8 +225,8 @@ public class IdeaService {
         response.setInterests(interests);
         response.setDietaryRestrictions(dietaryRestrictions);
         response.setIdeaStatus(ideaStatusRepository.findById(idea.getIdeaStatus().getId())
-                .map(IdeaStatus::getCode) // Adjust this to your actual method
-                .orElse(null)); // Use IdeaStatus entity directly
+                .map(IdeaStatus::getCode)
+                .orElse(null));
         response.setCreatedAt(idea.getCreatedAt());
 
         return response;

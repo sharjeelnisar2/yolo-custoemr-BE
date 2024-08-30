@@ -1,9 +1,12 @@
 package com.yolo.customer.idea;
 
+import com.yolo.customer.idea.dto.IdeaRequest;
+import com.yolo.customer.idea.dto.IdeaResponse;
 import com.yolo.customer.utils.ErrorResponse;
 import com.yolo.customer.utils.ResponseObject;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +22,10 @@ import java.util.Optional;
 @RequestMapping("/users/ideas")
 public class IdeaController {
 
-    private final IdeaService ideaService;
+    @Autowired
+    private IdeaService ideaService;
 
-    public IdeaController(IdeaService ideaService) {
-        this.ideaService = ideaService;
-    }
-
+    @PreAuthorize("hasAuthority('SUBMIT_IDEA')")
     @PatchMapping("/{ideaId}")
     public ResponseEntity<?> submitIdeaToVendor(@PathVariable("ideaId") Integer ideaId, @RequestBody Map<String, String> requestBody) {
         try {
@@ -49,6 +50,7 @@ public class IdeaController {
         }
     }
 
+    @PreAuthorize("hasAuthority('CREATE_IDEA')")
     @PostMapping("/create-draft")
     public ResponseEntity<?> createDraftIdea(@RequestBody IdeaRequest request) {
         try {
@@ -65,6 +67,7 @@ public class IdeaController {
         }
     }
 
+    @PreAuthorize("hasAuthority('VIEW_ALL_IDEAS')")
     @GetMapping
     public ResponseEntity<?> getIdeas(
             @RequestParam(value = "status", required = false) Integer statusId,

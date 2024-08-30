@@ -1,4 +1,4 @@
-package com.yolo.customer.AI;
+package com.yolo.customer.aiChatbot;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AIRequest {
+public class AIChatbotRequest {
     private List<String> interests;
     private List<String> dietaryRestrictions;
 

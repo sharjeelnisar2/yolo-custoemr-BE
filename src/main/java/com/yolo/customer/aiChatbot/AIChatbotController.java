@@ -1,8 +1,7 @@
-package com.yolo.customer.AI;
+package com.yolo.customer.aiChatbot;
 
 import com.yolo.customer.utils.ErrorResponse;
 import com.yolo.customer.utils.ResponseObject;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.anthropic.AnthropicChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,48 +17,18 @@ import java.util.regex.Pattern;
 @Slf4j
 @CrossOrigin
 @RestController
-public class AIController {
-
-    private final AnthropicChatModel chatModel;
-    private final AIService aiService;
+public class AIChatbotController {
 
     @Autowired
-    public AIController(AnthropicChatModel chatModel, AIService aiService) {
-        this.chatModel = chatModel;
-        this.aiService = aiService;
-    }
+    private AIChatbotService aiService;
 
+    @PreAuthorize("hasAuthority('CREATE_IDEA')")
     @PostMapping("/ai/generate")
-    public ResponseEntity<?> generate(@RequestBody AIRequest requestBody) {
+    public ResponseEntity<?> generate(@RequestBody AIChatbotRequest requestBody) {
         try {
-            String interests = String.join(", ", requestBody.getInterests());
-            String dietaryRestrictions = String.join(", ", requestBody.getDietaryRestrictions());
+            Map<String, String> idea = aiService.generateIdea(requestBody);
 
-            // Check the prompt processing limit for the user
-            aiService.processPrompt(interests, dietaryRestrictions);
-
-            // Build the AI prompt
-            String prompt = PromptBuilder.buildPrompt(requestBody);
-
-            // Call the AI model with the prompt
-            String result = chatModel.call(prompt);
-
-            String title = "";
-            String description = "";
-
-            // Regular expression to extract the title and description from the response
-            Pattern pattern = Pattern.compile("Title:\\s*\"(.*?)\"\\s*Description:\\s*(.*)", Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(result);
-
-            if (matcher.find()) {
-                title = matcher.group(1).trim(); // Extract the title
-                description = matcher.group(2).trim(); // Extract the description
-            }
-
-            return ResponseEntity.ok(new ResponseObject<>(true, "idea", Map.of(
-                    "title", title,
-                    "description", description
-            )));
+            return ResponseEntity.ok(new ResponseObject<>(true, "idea", idea));
         } catch (IllegalArgumentException e) {
             log.warn("Illegal argument: {}", e.getMessage());
             return ResponseEntity.badRequest()
@@ -71,6 +40,7 @@ public class AIController {
         }
     }
 
+    @PreAuthorize("hasAuthority('CREATE_IDEA')")
     @GetMapping("/ai/max-limit")
     public ResponseEntity<?> getMaxLimit() {
         try {

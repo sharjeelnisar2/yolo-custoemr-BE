@@ -19,7 +19,7 @@ public class Idea {
     @Column(name = "title", length = 64, nullable = false)
     private String title;
 
-    @Column(name = "description", length = 128, columnDefinition = "TEXT", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(name = "code", length = 8, unique = true, nullable = false)
