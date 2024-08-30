@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -76,9 +75,11 @@ public class RecipeService {
                 recipe.getDescription(),
                 recipe.getServingSize(),
                 recipe.getPrice(),
-                "USD",
-                recipe.getCode(),
                 idea.getCode(),
+                recipe.getCode(),
+                "USD",
+                recipe.getChefCode(),
+                recipe.getChefName(),
                 recipe.getCreatedAt(),
                 imageUrls
         );
@@ -88,23 +89,26 @@ public class RecipeService {
     @Transactional
     public Recipe createRecipe(RecipeRequest  newRecipe) throws EntityNotFoundException {
 
-        Idea idea = ideaRepository.findByCode(newRecipe.getIdeaCode());
+        Idea idea = ideaRepository.findByCode(newRecipe.getIdea_code());
+        if (idea == null) {
+            throw new EntityNotFoundException("Idea not found for code: " + newRecipe.getIdea_code());
+        }
         Integer ideaId = idea.getId();
 
         Recipe recipe = new Recipe();
-        recipe.setName(newRecipe.getName());
+        recipe.setName(newRecipe.getRecipe_name());
         recipe.setDescription(newRecipe.getDescription());
-        recipe.setServingSize(newRecipe.getServingSize());
-        recipe.setPrice(BigInteger.valueOf(newRecipe.getPrice()));
-        recipe.setCode(newRecipe.getRecipeCode());
-        recipe.setChefCode(newRecipe.getChefCode());
-        recipe.setChefName(newRecipe.getChefName());
+        recipe.setServingSize(newRecipe.getServing_size());
+        recipe.setPrice(newRecipe.getPrice());
+        recipe.setCode(newRecipe.getRecipe_code());
+        recipe.setChefCode(newRecipe.getChef_code());
+        recipe.setChefName(newRecipe.getChef_name());
         recipe.setIdeaId(ideaId);
         recipe.setCurrencyId(1);
 
         Recipe createdRecipe = recipeRepository.save(recipe);
 
-        List<String> imageUrls = newRecipe.getUrl();
+        List<String> imageUrls = newRecipe.getImages();
         if (imageUrls != null && !imageUrls.isEmpty()) {
             for (String imageUrl : imageUrls) {
                 RecipeImage recipeImage = new RecipeImage();
@@ -113,8 +117,6 @@ public class RecipeService {
                 recipeImageRepository.save(recipeImage);
             }
         }
-
-
         return recipeRepository.save(recipe);
     }
 

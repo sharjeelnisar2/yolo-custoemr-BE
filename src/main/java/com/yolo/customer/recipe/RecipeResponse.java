@@ -15,13 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 public class RecipeResponse {
     private Integer id;
-    private String title;
+    private String recipe_name;
     private String description;
-    private Integer servingSize;
+    private Integer serving_size;
     private BigInteger price;
-    private String currencyCode;
-    private String recipeCode;
-    private String ideaCode;
-    private LocalDateTime createdAt;
-    private List<String> url;
+    private String idea_code;
+    private String recipe_code;
+    private String currency_code;
+    private String chef_code;
+    private String chef_name;
+    private LocalDateTime created_at;
+    private List<String> images;
 }
