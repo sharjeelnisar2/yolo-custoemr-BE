@@ -119,7 +119,8 @@ public class IdeaService {
     @Transactional
     public Idea createDraftIdea(IdeaRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User loggedInUser = userRepository.findByUsername(username);
+        Optional<User> loggedInUser = userRepository.findByUsername(username);
+        Integer userId = loggedInUser.get().getId();
 
         List<String> interestsList = request.getInterests();
         if (interestsList == null || interestsList.isEmpty()) {
@@ -129,12 +130,12 @@ public class IdeaService {
         Idea idea = new Idea();
         idea.setTitle(request.getTitle());
         idea.setDescription(request.getDescription());
-        idea.setUserId(1); // Replace with actual user ID if needed
+        idea.setUserId(userId);
         idea.setCode(generateUniqueCode());
 
         IdeaStatus draftStatus = ideaStatusRepository.findByValue("Draft")
                 .orElseThrow(() -> new RuntimeException("Default Idea Status not found"));
-        idea.setIdeaStatus(draftStatus); // Set IdeaStatus entity directly
+        idea.setIdeaStatus(draftStatus);
 
         idea = ideaRepository.save(idea);
 
@@ -181,7 +182,6 @@ public class IdeaService {
 
         Page<Idea> ideas;
 
-        // Check if the status exists
         if (statusId.isPresent() && ideaStatusRepository.existsById(statusId.get())) {
             if (search != null && !search.isEmpty()) {
                 ideas = ideaRepository.findByIdeaStatusIdAndTitleContainingIgnoreCase(statusId.get(), search, pageable);

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -24,12 +25,12 @@ public class AIService {
 
     public int processPrompt(String interests, String dietaryRestrictions) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User loggedInUser = userRepository.findByUsername(username);
-//        Integer userId= loggedInUser.getId();
+        Optional<User> loggedInUser = userRepository.findByUsername(username);
+        Integer userId= loggedInUser.get().getId();
         String currentPrompt = generatePrompt(interests, dietaryRestrictions);
 
         // Retrieve existing prompts for the user
-        List<String> prompts = userPrompts.getOrDefault(1, new ArrayList<>());
+        List<String> prompts = userPrompts.getOrDefault(userId, new ArrayList<>());
 
         // Check if the current prompt has been repeated
         long matchingPrompts = prompts.stream().filter(p -> p.equals(currentPrompt)).count();
@@ -40,7 +41,7 @@ public class AIService {
 
         // Add current prompt to the list of prompts for the user
         prompts.add(currentPrompt);
-        userPrompts.put(1, prompts);
+        userPrompts.put(userId, prompts);
 
         // Return the remaining limit
         return maxLimit - (int) matchingPrompts;
