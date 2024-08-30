@@ -14,4 +14,6 @@ public interface IdeaRepository extends JpaRepository<Idea, Integer> {
     Page<Idea> findByIdeaStatusIdAndTitleContainingIgnoreCase(Integer ideaStatusId, String title, Pageable pageable);
 
     Page<Idea> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    Idea findByCode(String code);
 }
