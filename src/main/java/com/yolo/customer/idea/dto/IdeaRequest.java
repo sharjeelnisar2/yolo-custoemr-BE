@@ -1,4 +1,4 @@
-package com.yolo.customer.idea.dto;
+package com.yolo.customer.idea;
 
 import lombok.Data;
 
