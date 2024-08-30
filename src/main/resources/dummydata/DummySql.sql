@@ -41,11 +41,11 @@ VALUES
 (3, 'Gluten-Free', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO yolo_customer.recipe
-(id, name, description, serving_size, price, code, idea_id, currency_id, created_at, updated_at)
+(id, name, description, serving_size, price, code, chef_code, chef_name, idea_id, currency_id, created_at, updated_at)
 VALUES
-(1, 'Quinoa Salad', 'A healthy quinoa salad with vegetables.', 2, 1500, 'REC001', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 'Tofu Burger', 'A delicious tofu burger with vegan sauce.', 1, 1800, 'REC002', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(3, 'Zucchini Noodles', 'Gluten-free zucchini noodles with pesto sauce.', 2, 2000, 'REC003', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(1, 'Quinoa Salad', 'A healthy quinoa salad with vegetables.', 2, 1500, 'REC001', 'CHE001', 'Alex', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 'Tofu Burger', 'A delicious tofu burger with vegan sauce.', 1, 1800, 'REC002', 'CHE002', 'Jacob', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3, 'Zucchini Noodles', 'Gluten-free zucchini noodles with pesto sauce.', 2, 2000, 'REC003', 'CHE003', 'Max', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO yolo_customer.recipe_image
 (id, url, recipe_id, created_at, updated_at)
