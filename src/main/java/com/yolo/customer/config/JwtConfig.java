@@ -33,7 +33,7 @@ public class JwtConfig {
 
     private Collection<GrantedAuthority> extractAuthoritiesFromJwt(Jwt jwt) {
         Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
-        Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("CustomerVue");
+        Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("Yolo-Customer");
         List<String> roles = (List<String>) clientRoles.get("roles");
 
         return roles.stream()
