@@ -14,10 +14,10 @@ public class OrderStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "code", nullable = false, unique = true, length = 16)
+    @Column(name = "code", nullable = false, unique = true)
     private String code;
 
-    @Column(name =  "\"value\"", nullable = false, unique = true, length = 16)
+    @Column(name =  "\"value\"", nullable = false, unique = true)
     private String value;
 
     @Column(name = "is_active", nullable = false)

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yolo.customer.idea.dietaryRestriction.DietaryRestriction;
 import com.yolo.customer.idea.dietaryRestriction.DietaryRestrictionRepository;
+import com.yolo.customer.idea.dto.DraftIdeaRequest;
+import com.yolo.customer.idea.dto.IdeaDTO;
 import com.yolo.customer.idea.ideaStatus.IdeaStatus;
 import com.yolo.customer.idea.ideaStatus.IdeaStatusRepository;
 import com.yolo.customer.idea.ideaStatus.IdeaStatusService;

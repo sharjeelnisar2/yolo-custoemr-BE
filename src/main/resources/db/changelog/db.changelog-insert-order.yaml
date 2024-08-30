@@ -34,6 +34,16 @@ databaseChangeLog:
                   value: Dispatched
 
         - insert:
+            tableName: order_status
+            columns:
+              - column:
+                  name: code
+                  value: ARCHIVE
+              - column:
+                  name: value
+                  value: Archive
+
+        - insert:
             tableName: currency
             columns:
               - column:
