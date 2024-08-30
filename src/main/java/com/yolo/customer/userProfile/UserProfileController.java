@@ -33,7 +33,7 @@ public class UserProfileController {
         return ResponseEntity.ok("User profile updated successfully.");
     }
 
-    @PreAuthorize("hasAuthority('ROLE_VIEW_USER_INFO')")
+    @PreAuthorize("hasAuthority('ROLE_VIEW_PROFILE')")
     @GetMapping("/profiles")
     public ResponseEntity<Map<String, Boolean>> updateUserProfile() {
         boolean isUserProfile = userProfileService.checkUserProfile();
