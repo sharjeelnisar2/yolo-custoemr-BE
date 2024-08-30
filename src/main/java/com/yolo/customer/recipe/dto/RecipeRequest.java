@@ -1,4 +1,4 @@
-package com.yolo.customer.recipe;
+package com.yolo.customer.recipe.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "recipe_image")
 public class RecipeImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

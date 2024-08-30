@@ -1,7 +1,8 @@
 package com.yolo.customer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yolo.customer.recipe.RecipeRequest;
+import com.yolo.customer.recipe.dto.RecipeRequest;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -47,9 +50,19 @@ public class RecipeTests {
                         .param("page", "0")
                         .param("size", "10")
                         .param("ideaId", "1")
-                        .param("search", "someRecipe"))
-                .andExpect(status().isOk());
+                        .param("search", "someRecipe")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.recipes", Matchers.hasSize(Matchers.greaterThan(0))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.recipes[0].recipe_name").value("Quinoa Salad"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.recipes[0].description").value("A healthy quinoa salad with vegetables."))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.recipes[0].price").value(1500))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.recipes[0].images[0]").value("https://example.com/images/quinoa_salad.jpg"));
     }
+
 
     @Test
     @Order(2)

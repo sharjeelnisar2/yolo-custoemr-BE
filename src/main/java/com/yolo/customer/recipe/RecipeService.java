@@ -2,8 +2,11 @@ package com.yolo.customer.recipe;
 
 import com.yolo.customer.idea.Idea;
 import com.yolo.customer.idea.IdeaRepository;
+import com.yolo.customer.recipe.dto.RecipeRequest;
+import com.yolo.customer.recipe.dto.RecipeResponse;
 import com.yolo.customer.recipe.recipeImage.RecipeImage;
 import com.yolo.customer.recipe.recipeImage.RecipeImageRepository;
+import com.yolo.customer.utils.ApiMessages;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -30,10 +33,10 @@ public class RecipeService {
     @Transactional
     public List<RecipeResponse> findAll(Integer page, Integer size, Integer ideaId, String search) {
         if (page < 0) {
-            throw new IllegalArgumentException("Page index must not be less than zero.");
+            throw new IllegalArgumentException(ApiMessages.PAGE_INDEX_NEGATIVE.getMessage());
         }
         if (size <= 0) {
-            throw new IllegalArgumentException("Page size must be greater than zero.");
+            throw new IllegalArgumentException(ApiMessages.PAGE_SIZE_INVALID.getMessage());
         }
         if (size > 1000) {
             size = 1000;
@@ -51,23 +54,24 @@ public class RecipeService {
         }
 
         if (pageRecipes.isEmpty()) {
-            throw new EntityNotFoundException("No recipes found with the given criteria.");
+            throw new EntityNotFoundException(ApiMessages.NO_RECIPES_FOUND.getMessage());
         }
 
         return pageRecipes.getContent().stream()
-                .map(this::mapToRecipeResponse)
+                .map(recipe -> mapToRecipeResponse(recipe, paging))
                 .collect(Collectors.toList());
     }
 
-    private RecipeResponse mapToRecipeResponse(Recipe recipe) {
-        List<String> imageUrls = recipeImageRepository.findAllByRecipeId(recipe.getId())
-                .stream()
+    private RecipeResponse mapToRecipeResponse(Recipe recipe, Pageable pageable) {
+        Page<RecipeImage> imagePage = recipeImageRepository.findAllByRecipeId(recipe.getId(), pageable);
+        List<String> imageUrls = imagePage.getContent().stream()
                 .map(RecipeImage::getUrl)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         Idea idea = ideaRepository.findById(recipe.getIdeaId())
-                .orElseThrow(() -> new EntityNotFoundException("Idea not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ApiMessages.IDEA_NOT_FOUND_BY_ID.getMessage(), recipe.getIdeaId())));
 
         return new RecipeResponse(
                 recipe.getId(),
@@ -87,11 +91,12 @@ public class RecipeService {
 
 
     @Transactional
-    public Recipe createRecipe(RecipeRequest  newRecipe) throws EntityNotFoundException {
+    public Recipe createRecipe(RecipeRequest newRecipe) throws EntityNotFoundException {
 
         Idea idea = ideaRepository.findByCode(newRecipe.getIdea_code());
         if (idea == null) {
-            throw new EntityNotFoundException("Idea not found for code: " + newRecipe.getIdea_code());
+            String errorMessage = String.format(ApiMessages.IDEA_NOT_FOUND.getMessage(), newRecipe.getIdea_code());
+            throw new EntityNotFoundException(errorMessage);
         }
         Integer ideaId = idea.getId();
 

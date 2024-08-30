@@ -52,8 +52,6 @@ Before you begin, ensure you have the following installed:
     - Run the following commands
         - For YOLO Customer APP
             git clone https://github.com/sharjeelnisar2/yolo-custoemr-BE.git
-        - For YOLO Chef APP
-            git clone https://github.com/sharjeelnisar2/yolo-chef-BE.git
 
 2.    **Create MYSQL Database:**
 
@@ -82,26 +80,19 @@ Before you begin, ensure you have the following installed:
         You can run project using maven 
         In order to run project using maven
         - mvn clean install
-        - mvn spring-boot:run
-
-6.    **YOLO CUSTOMER FRONTEND:**
-
-        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository:
-        - https://github.com/sharjeelnisar2/yolo-customer-FE
-
-8.    **YOLO CHEF FRONTEND:**
-
-        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository:
-        - https://github.com/sharjeelnisar2/yolo-chef-BE
-
-9.    **YOLO CHEF FRONTEND:**
-
-        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository:
-        - https://github.com/sharjeelnisar2/yolo-chef-FE
+        - mvn spring-boot:run 
       
 ## Usage
 
-- Once the application is running, you can:
+- In Order to use all the features of application following projects should also be running:
+        For installation instructions on YOLO Customer Front end Please refer to the README.md file in the following repository:
+        - https://github.com/sharjeelnisar2/yolo-customer-FE
+        For installation instructions on YOLO Chef Back end Please refer to the README.md file in the following repository:
+        - https://github.com/sharjeelnisar2/yolo-chef-BE
+        For installation instructions on YOLO Chef Front end Please refer to the README.md file in the following repository:
+        - https://github.com/sharjeelnisar2/yolo-chef-FE
+
+- Once the applications are running, you can:
     - Register/Login to the platform
     - Create Custom Ideas manually or using the AI assistant
     - Submit Ideas and View Recipes submitted by YOLO CHEF application againt your ideas

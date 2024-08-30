@@ -1,5 +1,7 @@
 package com.yolo.customer.recipe;
 
+import com.yolo.customer.recipe.dto.RecipeRequest;
+import com.yolo.customer.recipe.dto.RecipeResponse;
 import com.yolo.customer.utils.ErrorResponse;
 import com.yolo.customer.utils.ResponseObject;
 import jakarta.persistence.EntityNotFoundException;
