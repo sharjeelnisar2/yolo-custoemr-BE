@@ -1,5 +1,6 @@
 package com.yolo.customer.idea;
 
+import com.yolo.customer.idea.dto.DraftIdeaRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
