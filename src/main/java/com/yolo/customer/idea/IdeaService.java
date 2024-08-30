@@ -65,7 +65,7 @@ public class IdeaService {
             IdeaStatus ideaStatus = ideaStatusRepository.findByValue(status)
                     .orElseThrow(() -> new RuntimeException("Idea status with name " + status + " not found"));
 
-            idea.setIdeaStatus(ideaStatus); // Set IdeaStatus entity directly
+            idea.setIdeaStatusId(ideaStatus); // Set IdeaStatus entity directly
             ideaRepository.save(idea);
 
             Map<String, String> response = new HashMap<>();
@@ -145,7 +145,7 @@ public class IdeaService {
 
         IdeaStatus draftStatus = ideaStatusRepository.findByValue("Draft")
                 .orElseThrow(() -> new RuntimeException("Default Idea Status not found"));
-        idea.setIdeaStatus(draftStatus);
+        idea.setIdeaStatusId(draftStatus);
 
         idea = ideaRepository.save(idea);
 
@@ -224,7 +224,7 @@ public class IdeaService {
         response.setDescription(idea.getDescription());
         response.setInterests(interests);
         response.setDietaryRestrictions(dietaryRestrictions);
-        response.setIdeaStatus(ideaStatusRepository.findById(idea.getIdeaStatus().getId())
+        response.setIdeaStatus(ideaStatusRepository.findById(idea.getIdeaStatusId().getId())
                 .map(IdeaStatus::getCode)
                 .orElse(null));
         response.setCreatedAt(idea.getCreatedAt());

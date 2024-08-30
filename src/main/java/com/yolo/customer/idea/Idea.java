@@ -27,7 +27,7 @@ public class Idea {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idea_status_id", nullable = false)
-    private IdeaStatus ideaStatus;
+    private IdeaStatus ideaStatusId;
 
     @Column(name = "user_id", nullable = false)
     private Integer userId;
@@ -56,7 +56,7 @@ public class Idea {
             this.title = other.title;
             this.description = other.description;
             this.code = other.code;
-            this.ideaStatus = other.ideaStatus;
+            this.ideaStatusId = other.ideaStatusId;
             this.userId = other.userId;
             this.createdAt = other.createdAt;
             this.updatedAt = other.updatedAt;
