@@ -64,10 +64,6 @@ public class OrderController {
         try {
             List<Order> orders = orderService.findAll(page, size, status);
             return ResponseEntity.ok(new ResponseObject<>(true, "orders", orders));
-        } catch (EntityNotFoundException e) {
-            log.warn("Entity not found: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
         } catch (IllegalArgumentException e) {
             log.warn("Illegal argument: {}", e.getMessage());
             return ResponseEntity.badRequest()

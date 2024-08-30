@@ -1,8 +1,6 @@
-package com.yolo.customer.idea;
+package com.yolo.customer.idea.dto;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 

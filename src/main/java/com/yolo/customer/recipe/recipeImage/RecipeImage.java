@@ -1,32 +1,25 @@
-package com.yolo.customer.order.orderItem;
+package com.yolo.customer.recipe.recipeImage;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name="order_item")
-public class OrderItem {
-
+@Entity(name = "recipe_image")
+public class RecipeImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(nullable = false)
-    private int quantity;
+    @Column(name = "url", nullable = false)
+    private String url;
 
-    @Column(name = "order_id", nullable = false)
-    private int orderId;
-
-    @Column(name = "recipe_id", nullable = false)
-    private int recipeId;
-
-    @Column(name = "price", nullable = false)
-    private BigInteger price;
+    @Column(name = "recipe_id", unique = true, nullable = false)
+    private Integer recipeId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -43,5 +36,4 @@ public class OrderItem {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
 }
