@@ -68,7 +68,7 @@ Before you begin, ensure you have the following installed:
         - DB_USERNAME
         - DB_PASSWORD
         #### AI Key
-        - ANTHROPIC_KEY
+        - AI_KEY
 
 5.    **Run Project:**
 
