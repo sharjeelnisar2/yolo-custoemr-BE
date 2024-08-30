@@ -84,7 +84,6 @@ public class OrderTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true));
-                //.andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Order placed successfully"));
     }
 
     @Order(2)
@@ -93,7 +92,7 @@ public class OrderTests {
         String orderRequestPayload = "{"
                 + "\"order\": {"
                 + "\"currencyCode\": \"USD\","
-                + "\"orderItems\": []" // Empty orderItems to trigger the validation error
+                + "\"orderItems\": []"
                 + "}"
                 + "}";
 

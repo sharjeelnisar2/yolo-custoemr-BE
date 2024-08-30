@@ -1,7 +1,5 @@
 package com.yolo.customer.idea;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yolo.customer.idea.dietaryRestriction.DietaryRestrictionRepository;
 import com.yolo.customer.idea.dto.DraftIdeaRequest;
 import com.yolo.customer.idea.dto.IdeaDTO;
@@ -22,9 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.context.SecurityContextHolder;
-//import org.springframework.security.core.userdetails.UserDetails;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,33 +32,34 @@ import java.util.stream.Collectors;
 @Service
 public class IdeaService {
 
-    @Autowired
-    private IdeaRepository ideaRepository;
+    private final IdeaRepository ideaRepository;
+    private final IdeaStatusRepository ideaStatusRepository;
+    private final IdeaStatusService ideaStatusService;
+    private final InterestRepository interestRepository;
+    private final DietaryRestrictionRepository dietaryRestrictionRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private IdeaStatusRepository ideaStatusRepository;
-
-    @Autowired
-    private IdeaStatusService ideaStatusService;
-
-    @Autowired
-    private InterestRepository interestRepository;
-
-    @Autowired
-    private DietaryRestrictionRepository dietaryRestrictionRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-//    @Autowired
-//    private UserRepository userRepository;
+    public IdeaService(IdeaRepository ideaRepository,
+                                IdeaStatusRepository ideaStatusRepository,
+                                IdeaStatusService ideaStatusService,
+                                InterestRepository interestRepository,
+                                DietaryRestrictionRepository dietaryRestrictionRepository,
+                                UserRepository userRepository) {
+        this.ideaRepository = ideaRepository;
+        this.ideaStatusRepository = ideaStatusRepository;
+        this.ideaStatusService = ideaStatusService;
+        this.interestRepository = interestRepository;
+        this.dietaryRestrictionRepository = dietaryRestrictionRepository;
+        this.userRepository = userRepository;
+    }
 
     public ResponseEntity<Map<String, String>> submitIdeaToVendor(Integer ideaId, String status) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = GetContextHolder.getUsernameFromAuthentication(authentication);
         User loggedInUser = userRepository.findByUsername(username).orElseThrow(() ->
-                new EntityNotFoundException("User with given username does not exist: " + username));
+                new EntityNotFoundException("User with given username does not exist"));
 
         if (status == null || status.isEmpty()) {
             throw new EntityNotFoundException("Status cannot be empty.");
@@ -102,7 +99,6 @@ public class IdeaService {
         ideaDetails.setDescription(idea.getDescription());
         ideaDetails.setIdea_code(idea.getCode());
 
-        // Get interests
         List<String> interests = interestRepository.findByIdeaId(idea.getId())
                 .stream()
                 .map(Interest::getDescription)
@@ -118,17 +114,13 @@ public class IdeaService {
         IdeaDTO ideaDTO = new IdeaDTO();
         ideaDTO.setIdea(ideaDetails);
 
-        // Prepare headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Create HttpEntity
         HttpEntity<IdeaDTO> requestEntity = new HttpEntity<>(ideaDTO, headers);
 
-        // Vendor API URL (Replace with actual URL and port)
         String vendorApiUrl = "http://localhost:8081/api/v1/ideas";
 
-        // Create RestTemplate
         RestTemplate restTemplate = new RestTemplate();
 
 //        try {
@@ -154,16 +146,6 @@ public class IdeaService {
 
         return true;
     }
-
-
-//    public static String getCurrentUserId() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//            return userDetails.getUsername(); // Assuming username is the user ID
-//        }
-//        return null; // or throw an exception if preferred
-//    }
 
     @Transactional
     public Idea createDraftIdea(DraftIdeaRequest request) {
@@ -224,8 +206,6 @@ public class IdeaService {
 
         return idea;
     }
-
-
 
     private String generateUniqueCode() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();

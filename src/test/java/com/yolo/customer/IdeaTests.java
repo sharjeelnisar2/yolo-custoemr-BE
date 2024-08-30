@@ -76,7 +76,6 @@ public class IdeaTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ideaRequestPayload))
                 .andDo(MockMvcResultHandlers.print())
-//                .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.details").value("Status cannot be empty."))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("An error occurred"));

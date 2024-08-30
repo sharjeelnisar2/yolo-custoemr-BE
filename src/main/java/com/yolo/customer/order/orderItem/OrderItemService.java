@@ -5,7 +5,6 @@ import com.yolo.customer.recipe.RecipeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -18,11 +17,6 @@ public class OrderItemService {
         this.orderItemRepository = orderItemRepository;
         this.recipeRepository = recipeRepository;
     }
-
-//    public List<Map<String, Object>> getOrderItemsWithRecipeByOrderId(Integer orderId) {
-//        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
-//        return orderItems.stream().map(this::mapToOrderItemWithRecipe).toList();
-//    }
 
     private Map<String, Object> mapToOrderItemWithRecipe(OrderItem orderItem) {
         Recipe recipe = recipeRepository.findById(orderItem.getRecipeId())

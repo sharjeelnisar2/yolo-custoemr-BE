@@ -20,7 +20,6 @@ public class OrderRequest {
         private String currencyCode;
         private List<OrderItemDto> orderItems = new ArrayList<>();
 
-        // Ensure non-null list
         public void setOrderItems(List<OrderItemDto> orderItems) {
             this.orderItems = orderItems != null ? orderItems : new ArrayList<>();
         }
@@ -32,6 +31,6 @@ public class OrderRequest {
         private int quantity;
         private BigInteger price;
         private int recipeId;
-        private String chefName; // Added chefName here
+        private String chefName;
     }
 }

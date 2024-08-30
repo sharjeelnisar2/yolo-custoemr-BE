@@ -46,16 +46,5 @@ public class IdeaDTO {
             return new ArrayList<>(interests);
         }
 
-//        public void setInterests(List<String> interests) {
-//            this.interests = (interests == null) ? new ArrayList<>() : new ArrayList<>(interests);
-//        }
-//
-//        public List<String> getDietaryRestrictions() {
-//            return new ArrayList<>(dietary_restrictions);
-//        }
-//
-//        public void setDietaryRestrictions(List<String> dietary_restrictions) {
-//            this.dietary_restrictions = (dietary_restrictions == null) ? new ArrayList<>() : new ArrayList<>(dietary_restrictions);
-//        }
     }
 }

@@ -25,7 +25,7 @@ public class Recipe {
     @Column(name = "serving_size")
     private Integer servingSize;
 
-    @Column(name = "chef_code", length = 8)
+    @Column(name = "chef_code")
     private String chefCode;
 
     @Column(name = "chef_name", nullable = false)

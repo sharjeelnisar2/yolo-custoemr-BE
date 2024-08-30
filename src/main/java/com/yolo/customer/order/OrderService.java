@@ -41,7 +41,8 @@ public class OrderService {
     private final AddressRepository addressRepository;
 
     public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository,
-                        RecipeRepository recipeRepository, UserRepository userRepository,  UserProfileRepository userProfileRepository, AddressRepository addressRepository){
+                        RecipeRepository recipeRepository, UserRepository userRepository,  UserProfileRepository userProfileRepository,
+                        AddressRepository addressRepository){
         this.orderRepository=orderRepository;
         this.orderStatusRepository=orderStatusRepository;
         this.orderItemRepository = orderItemRepository;
