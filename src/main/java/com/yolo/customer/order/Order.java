@@ -18,7 +18,7 @@ public class Order {
     @Column(name = "price", nullable = false)
     private BigInteger price;
 
-    @Column(name = "code", length = 8, unique = true, nullable = false)
+    @Column(name = "code", unique = true, nullable = false)
     private String code;
 
     @Column(name = "order_status_id", nullable = false)
