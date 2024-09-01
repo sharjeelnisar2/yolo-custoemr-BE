@@ -14,6 +14,7 @@ import com.yolo.customer.idea.interest.Interest;
 import com.yolo.customer.idea.interest.InterestRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
+import com.yolo.customer.utils.ApiMessages;
 import com.yolo.customer.utils.GetContextHolder;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,27 +125,27 @@ public class IdeaService {
 
     @Transactional
     public Idea createDraftIdea(IdeaRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
-
-        User loggedInUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
-
-        Integer userId = loggedInUser.getId();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+//
+//        User loggedInUser = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
+//
+//        Integer userId = loggedInUser.getId();
 
         List<String> interestsList = request.getInterests();
         if (interestsList == null || interestsList.isEmpty()) {
-            throw new IllegalArgumentException("At least one interest should be entered");
+            throw new IllegalArgumentException(ApiMessages.INTERESTS_REQUIRED.getMessage());
         }
 
         Idea idea = new Idea();
         idea.setTitle(request.getTitle());
         idea.setDescription(request.getDescription());
-        idea.setUserId(userId);
+        idea.setUserId(1);
         idea.setCode(generateUniqueCode());
 
         IdeaStatus draftStatus = ideaStatusRepository.findByValue("Draft")
-                .orElseThrow(() -> new RuntimeException("Default Idea Status not found"));
+                .orElseThrow(() -> new RuntimeException(ApiMessages.DEFAULT_IDEA_STATUS_NOT_FOUND.getMessage()));
         idea.setIdeaStatusId(draftStatus);
 
         idea = ideaRepository.save(idea);
@@ -187,17 +188,25 @@ public class IdeaService {
 
     @Transactional
     public Page<IdeaResponse> getIdeas(Optional<Integer> statusId, String search, int page, int size, String sortOrder) {
-        Pageable pageable = PageRequest.of(page - 1, size,
-                sortOrder.equalsIgnoreCase("asc") ? Sort.by("createdAt").ascending() : Sort.by("createdAt").descending());
+        if (page < 1) {
+            throw new IllegalArgumentException(ApiMessages.PAGE_INDEX_NEGATIVE.getMessage());
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException(ApiMessages.PAGE_SIZE_INVALID.getMessage());
+        }
+        if (size > 1000) {
+            size = 1000;
+        }
+
+        Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by("createdAt").ascending() : Sort.by("createdAt").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
 
         Page<Idea> ideas;
 
         if (statusId.isPresent() && ideaStatusRepository.existsById(statusId.get())) {
-            if (search != null && !search.isEmpty()) {
-                ideas = ideaRepository.findByIdeaStatusIdAndTitleContainingIgnoreCase(statusId.get(), search, pageable);
-            } else {
-                ideas = ideaRepository.findByIdeaStatusId(statusId.get(), pageable);
-            }
+            ideas = (search != null && !search.isEmpty()) ?
+                    ideaRepository.findByIdeaStatusIdAndTitleContainingIgnoreCase(statusId.get(), search, pageable) :
+                    ideaRepository.findByIdeaStatusId(statusId.get(), pageable);
         } else if (search != null && !search.isEmpty()) {
             ideas = ideaRepository.findByTitleContainingIgnoreCase(search, pageable);
         } else {
@@ -206,6 +215,7 @@ public class IdeaService {
 
         return ideas.map(this::mapToIdeaResponse);
     }
+
 
     private IdeaResponse mapToIdeaResponse(Idea idea) {
         List<String> interests = interestRepository.findByIdeaId(idea.getId())

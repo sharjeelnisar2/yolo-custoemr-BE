@@ -3,7 +3,9 @@ package com.yolo.customer.aiChatbot;
 import com.yolo.customer.user.UserRepository;
 import com.yolo.customer.user.User;
 import com.yolo.customer.utils.AIChatbotUtils;
+import com.yolo.customer.utils.ApiMessages;
 import com.yolo.customer.utils.GetContextHolder;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.ai.anthropic.AnthropicChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class AIChatbotService {
     @Autowired
     private AnthropicChatModel chatModel;
 
+    @Autowired
+    private PromptBuilder promptBuilder;
+
     // In-memory store for tracking user prompts
     private final ConcurrentHashMap<Integer, List<String>> userPrompts = new ConcurrentHashMap<>();
 
@@ -39,7 +44,7 @@ public class AIChatbotService {
 
         processPrompt(interests, dietaryRestrictions);
 
-        String prompt = PromptBuilder.buildPrompt(requestBody);
+        String prompt = promptBuilder.buildPrompt(requestBody);
 
         String result = chatModel.call(prompt);
 
@@ -47,26 +52,26 @@ public class AIChatbotService {
     }
 
     public int processPrompt(String interests, String dietaryRestrictions) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
-
-        User loggedInUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
-
-        Integer userId = loggedInUser.getId();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+//
+//        User loggedInUser = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
+//
+//        Integer userId = loggedInUser.getId();
 
         String currentPrompt = AIChatbotUtils.generatePrompt(interests, dietaryRestrictions);
 
-        List<String> prompts = userPrompts.getOrDefault(userId, new ArrayList<>());
+        List<String> prompts = userPrompts.getOrDefault(1, new ArrayList<>());
 
         long matchingPrompts = prompts.stream().filter(p -> p.equals(currentPrompt)).count();
 
         if (matchingPrompts >= maxLimit) {
-            throw new IllegalStateException("Max limit reached for repeated prompts.");
+            throw new IllegalStateException(ApiMessages.MAX_LIMIT_REACHED.getMessage());
         }
 
         prompts.add(currentPrompt);
-        userPrompts.put(userId, prompts);
+        userPrompts.put(1, prompts);
 
         return maxLimit - (int) matchingPrompts;
     }

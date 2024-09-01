@@ -13,11 +13,11 @@ import java.util.List;
 @Component
 public class PromptBuilder {
 
-    @Value("${api.security.TITLE_LENGTH}")
-    private static int titleLength;
+    @Value("${api.security.title_length}")
+    public int titleLength;
 
-    @Value("${api.security.DESCRIPTION_LENGTH}")
-    private static int descriptionLength;
+    @Value("${api.security.description_length}")
+    public int descriptionLength;
 
     @Value("classpath:constant/prompt.txt")
     private Resource promptTemplate;
@@ -29,7 +29,7 @@ public class PromptBuilder {
         template = new String(Files.readAllBytes(Paths.get(promptTemplate.getURI())));
     }
 
-    public static String buildPrompt(AIChatbotRequest requestBody) {
+    public String buildPrompt(AIChatbotRequest requestBody) {
         List<String> interests = requestBody.getInterests();
         List<String> restrictions = requestBody.getDietaryRestrictions();
 

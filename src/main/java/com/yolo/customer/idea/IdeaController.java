@@ -50,7 +50,7 @@ public class IdeaController {
         }
     }
 
-    @PreAuthorize("hasAuthority('CREATE_IDEA')")
+//    @PreAuthorize("hasAuthority('CREATE_IDEA')")
     @PostMapping("/create-draft")
     public ResponseEntity<?> createDraftIdea(@RequestBody IdeaRequest request) {
         try {
