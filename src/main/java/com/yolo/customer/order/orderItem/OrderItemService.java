@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +24,16 @@ public class OrderItemService {
         this.recipeRepository = recipeRepository;
     }
 
-    public List<Map<String, Object>> getOrderItemsWithRecipeByOrderId(Integer orderId,  int page, int size) {
+    public Page<Map<String, Object>> getOrderItemsWithRecipeByOrderId(Integer orderId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderItem> orderItemPage = orderItemRepository.findByOrderIdOrderByCreatedAtDesc(orderId, pageable);
-        return orderItemPage.stream().map(this::mapToOrderItemWithRecipe).collect(Collectors.toList());
+
+        List<Map<String, Object>> orderItemsWithRecipes = orderItemPage.stream()
+                .map(this::mapToOrderItemWithRecipe)
+                .collect(Collectors.toList());
+
+        // Creating a new Page object with the list and pagination information
+        return new PageImpl<>(orderItemsWithRecipes, pageable, orderItemPage.getTotalElements());
     }
 
     private Map<String, Object> mapToOrderItemWithRecipe(OrderItem orderItem) {
