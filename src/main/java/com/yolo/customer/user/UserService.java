@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    // Constructor injection
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public Map<String, Object> extractUserDetails(Jwt jwt) {
         Map<String, Object> userDetails = new HashMap<>();
@@ -24,7 +29,7 @@ public class UserService {
         userDetails.put("email", jwt.getClaim("email"));
 
         List<String> roles = jwt.getClaimAsStringList("roles");
-        if (roles == null) {
+        if (roles == null || roles.isEmpty()) {
             roles = extractRolesFromJwt(jwt);
         }
         userDetails.put("roles", roles);
@@ -35,7 +40,8 @@ public class UserService {
         return userDetails;
     }
 
-        public User createUser(String username, String email) {
+
+    public User createUser(String username, String email) {
 
         if (username == null || username.trim().isEmpty()) {
             throw new IllegalArgumentException("Username is required.");
@@ -63,11 +69,18 @@ public class UserService {
     private List<String> extractRolesFromJwt(Jwt jwt) {
         Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
         Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("Yolo-Customer");
+
+        if (clientRoles == null || clientRoles.get("roles") == null) {
+            // Handle the case where there are no roles
+            return Collections.emptyList();
+        }
+
         List<String> roles = (List<String>) clientRoles.get("roles");
 
         return roles.stream()
                 .map(role -> role.replace(" ", "_"))
                 .collect(Collectors.toList());
     }
+
 }
 

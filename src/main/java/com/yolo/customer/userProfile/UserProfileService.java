@@ -20,17 +20,21 @@ import java.util.Optional;
 @Service
 public class UserProfileService {
 
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final AddressRepository addressRepository;
+    private final CurrencyRepository currencyRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
-    private CurrencyRepository currencyRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    // Constructor injection
+    public UserProfileService(UserProfileRepository userProfileRepository,
+                              AddressRepository addressRepository,
+                              CurrencyRepository currencyRepository,
+                              UserRepository userRepository) {
+        this.userProfileRepository = userProfileRepository;
+        this.addressRepository = addressRepository;
+        this.currencyRepository = currencyRepository;
+        this.userRepository = userRepository;
+    }
 
     public UserProfile createUserProfile(UserProfileRequestDTO userProfileRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -123,6 +127,43 @@ public class UserProfileService {
 
         Optional<UserProfile> userProfile = userProfileRepository.findByUserId(user.getId());
         return userProfile.isPresent();
+    }
+
+
+    public UserProfileRequestDTO getUserProfileDetails() {
+        // Fetch the authenticated user's username
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+
+        // Retrieve the User entity based on the username
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        // Retrieve the UserProfile based on the user's ID
+        UserProfile userProfile = userProfileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found"));
+
+        // Retrieve the Address and Currency based on IDs in UserProfile
+        Address address = addressRepository.findById(userProfile.getAddressId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+
+        Currency currency = currencyRepository.findById(userProfile.getCurrencyId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Currency not found"));
+
+        // Create and populate the DTO
+        UserProfileRequestDTO dto = new UserProfileRequestDTO();
+        dto.setFirst_name(userProfile.getFirstName());
+        dto.setLast_name(userProfile.getLastName());
+        dto.setContact_number(userProfile.getContactNumber());
+        dto.setHouse(address.getHouse());
+        dto.setStreet(address.getStreet());
+        dto.setArea(address.getArea());
+        dto.setZip_code(address.getZipCode());
+        dto.setCity(address.getCity());
+        dto.setCountry(address.getCountry());
+        dto.setCurrency_code(currency.getCode());
+
+        return dto;
     }
 
 
