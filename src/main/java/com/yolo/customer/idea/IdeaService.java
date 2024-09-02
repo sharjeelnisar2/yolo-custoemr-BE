@@ -31,13 +31,11 @@ import java.util.stream.Collectors;
 public class IdeaService {
 
     private final IdeaRepository ideaRepository;
-    private final IdeaStatusRepository ideaStatusRepository;
     private final IdeaStatusService ideaStatusService;
     private final InterestRepository interestRepository;
     private final DietaryRestrictionRepository dietaryRestrictionRepository;
     private final UserRepository userRepository;
 
-    @Autowired
     public IdeaService(IdeaRepository ideaRepository,
                                 IdeaStatusRepository ideaStatusRepository,
                                 IdeaStatusService ideaStatusService,
@@ -45,7 +43,6 @@ public class IdeaService {
                                 DietaryRestrictionRepository dietaryRestrictionRepository,
                                 UserRepository userRepository) {
         this.ideaRepository = ideaRepository;
-        this.ideaStatusRepository = ideaStatusRepository;
         this.ideaStatusService = ideaStatusService;
         this.interestRepository = interestRepository;
         this.dietaryRestrictionRepository = dietaryRestrictionRepository;

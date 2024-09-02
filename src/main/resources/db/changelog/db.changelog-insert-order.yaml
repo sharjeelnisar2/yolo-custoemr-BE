@@ -18,7 +18,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: code
-                  value: PROCESSING
+                  value: INPROCESS
               - column:
                   name: value
                   value: Inprocess

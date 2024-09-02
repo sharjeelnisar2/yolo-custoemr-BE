@@ -44,8 +44,9 @@ public class OrderService {
     private final UserProfileRepository userProfileRepository;
     private final AddressRepository addressRepository;
 
-    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository,
-                        RecipeRepository recipeRepository, UserRepository userRepository,  UserProfileRepository userProfileRepository,
+    public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository,
+                        OrderItemRepository orderItemRepository, RecipeRepository recipeRepository,
+                        UserRepository userRepository,  UserProfileRepository userProfileRepository,
                         AddressRepository addressRepository, OrderStatusService orderStatusService){
         this.orderRepository=orderRepository;
         this.orderStatusRepository=orderStatusRepository;
@@ -187,7 +188,7 @@ public class OrderService {
             Order order = new Order();
             order.setCode(orderCode);
             order.setPrice(totalPrice);
-            
+
             Integer orderStatusId = orderStatusService.findStatusIdByValue("Placed");
             order.setOrderStatusId(orderStatusId);
 
