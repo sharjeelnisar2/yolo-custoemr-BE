@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,12 +35,19 @@ public class JwtConfig {
     private Collection<GrantedAuthority> extractAuthoritiesFromJwt(Jwt jwt) {
         Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
         Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("Yolo-Customer");
+
+        if (clientRoles == null || clientRoles.get("roles") == null) {
+            // Handle the case where there are no roles
+            return Collections.emptyList();
+        }
+
         List<String> roles = (List<String>) clientRoles.get("roles");
 
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.replace(" ", "_").toUpperCase()))
                 .collect(Collectors.toList());
     }
+
 
     @Bean
     public JWTAuthenticationFilter jwtAuthenticationFilter() {

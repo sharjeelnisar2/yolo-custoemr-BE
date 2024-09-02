@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -27,7 +28,15 @@ public class UserController {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         Map<String, Object> userDetails = userService.extractUserDetails(jwt);
         Map<String, Object> response = new HashMap<>();
-        response.put("user_details", userDetails);
+
+        // Check if roles are present
+        List<String> roles = (List<String>) userDetails.get("roles");
+        if (roles == null || roles.isEmpty()) {
+            response.put("error", "User does not have any roles assigned");
+        } else {
+            response.put("user_details", userDetails);
+        }
+
         return response;
     }
 

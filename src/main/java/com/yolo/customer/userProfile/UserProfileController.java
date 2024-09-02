@@ -32,17 +32,23 @@ public class UserProfileController {
         return ResponseEntity.ok("User profile updated successfully.");
     }
 
-    @PreAuthorize("hasAuthority('ROLE_VIEW_PROFILE')")
+    @PreAuthorize("hasAuthority('ROLE_CREATE_PROFILE')")
     @GetMapping("/profiles")
-    public ResponseEntity<Map<String, Boolean>> updateUserProfile() {
+    public ResponseEntity<Map<String, Boolean>> checkUserProfile() {
         boolean isUserProfile = userProfileService.checkUserProfile();
 
-        // Create a Map to hold the JSON response
         Map<String, Boolean> response = new HashMap<>();
         response.put("is_user_profile_completed", isUserProfile);
 
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_VIEW_PROFILE')")
+    @GetMapping("/profile")
+    public ResponseEntity<?> viewUserProfile() {
+            UserProfileRequestDTO userProfile = userProfileService.getUserProfileDetails();
+
+        return ResponseEntity.ok(userProfile);
+    }
 
 }

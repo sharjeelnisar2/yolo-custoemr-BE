@@ -8,7 +8,6 @@ import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
 import com.yolo.customer.utils.GetContextHolder;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,17 +19,20 @@ import java.util.Optional;
 @Service
 public class UserProfileService {
 
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final AddressRepository addressRepository;
+    private final CurrencyRepository currencyRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
-    private CurrencyRepository currencyRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    public UserProfileService(UserProfileRepository userProfileRepository,
+                              AddressRepository addressRepository,
+                              CurrencyRepository currencyRepository,
+                              UserRepository userRepository) {
+        this.userProfileRepository = userProfileRepository;
+        this.addressRepository = addressRepository;
+        this.currencyRepository = currencyRepository;
+        this.userRepository = userRepository;
+    }
 
     public UserProfile createUserProfile(UserProfileRequestDTO userProfileRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -123,6 +125,38 @@ public class UserProfileService {
 
         Optional<UserProfile> userProfile = userProfileRepository.findByUserId(user.getId());
         return userProfile.isPresent();
+    }
+
+
+    public UserProfileRequestDTO getUserProfileDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        UserProfile userProfile = userProfileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found"));
+
+        Address address = addressRepository.findById(userProfile.getAddressId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+
+        Currency currency = currencyRepository.findById(userProfile.getCurrencyId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Currency not found"));
+
+        UserProfileRequestDTO dto = new UserProfileRequestDTO();
+        dto.setFirst_name(userProfile.getFirstName());
+        dto.setLast_name(userProfile.getLastName());
+        dto.setContact_number(userProfile.getContactNumber());
+        dto.setHouse(address.getHouse());
+        dto.setStreet(address.getStreet());
+        dto.setArea(address.getArea());
+        dto.setZip_code(address.getZipCode());
+        dto.setCity(address.getCity());
+        dto.setCountry(address.getCountry());
+        dto.setCurrency_code(currency.getCode());
+
+        return dto;
     }
 
 
