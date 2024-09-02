@@ -58,7 +58,7 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
-                  name: value
+                  name: valuee
                   type: VARCHAR(16)
                   constraints:
                     nullable: false

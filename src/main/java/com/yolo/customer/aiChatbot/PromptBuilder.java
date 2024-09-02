@@ -19,7 +19,7 @@ public class PromptBuilder {
     @Value("${api.security.description_length}")
     public int descriptionLength;
 
-    @Value("classpath:constant/prompt.txt")
+    @Value("classpath:constants/prompt.txt")
     private Resource promptTemplate;
 
     private static String template;

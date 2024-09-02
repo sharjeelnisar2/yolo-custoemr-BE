@@ -10,7 +10,7 @@ databaseChangeLog:
                   name: code
                   value: DRAFT
               - column:
-                  name: value
+                  name: valuee
                   value: Draft
 
         - insert:
@@ -20,7 +20,7 @@ databaseChangeLog:
                   name: code
                   value: SUBMITTED
               - column:
-                  name: value
+                  name: valuee
                   value: Submitted
 
         - insert:
@@ -30,5 +30,5 @@ databaseChangeLog:
                   name: code
                   value: ARCHIVE
               - column:
-                  name: value
+                  name: valuee
                   value: Archive
