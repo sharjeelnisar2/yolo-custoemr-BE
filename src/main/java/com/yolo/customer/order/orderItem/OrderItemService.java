@@ -32,7 +32,6 @@ public class OrderItemService {
                 .map(this::mapToOrderItemWithRecipe)
                 .collect(Collectors.toList());
 
-        // Creating a new Page object with the list and pagination information
         return new PageImpl<>(orderItemsWithRecipes, pageable, orderItemPage.getTotalElements());
     }
 
