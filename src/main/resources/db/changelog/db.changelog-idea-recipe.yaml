@@ -136,6 +136,8 @@ databaseChangeLog:
               - column:
                   name: chef_code
                   type: VARCHAR(8)
+                  constraints:
+                    unique: true
               - column:
                   name: chef_name
                   type: VARCHAR(32)
@@ -193,4 +195,3 @@ databaseChangeLog:
                   constraints:
                     defaultValue: CURRENT_TIMESTAMP
                     onUpdate: CURRENT_TIMESTAMP
-
