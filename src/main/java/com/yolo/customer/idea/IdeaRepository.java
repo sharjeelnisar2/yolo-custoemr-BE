@@ -7,4 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface IdeaRepository extends JpaRepository<Idea, Integer> {
+
+    Idea findByCode(String code);
 }
