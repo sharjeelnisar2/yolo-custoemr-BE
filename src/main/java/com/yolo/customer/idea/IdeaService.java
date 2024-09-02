@@ -1,7 +1,6 @@
 package com.yolo.customer.idea;
 
 import com.yolo.customer.idea.dietaryRestriction.DietaryRestrictionRepository;
-import com.yolo.customer.idea.dto.DraftIdeaRequest;
 import com.yolo.customer.idea.dto.IdeaDTO;
 import com.yolo.customer.idea.ideaStatus.IdeaStatus;
 import com.yolo.customer.idea.ideaStatus.IdeaStatusRepository;
@@ -18,7 +17,6 @@ import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -123,88 +121,7 @@ public class IdeaService {
 
         RestTemplate restTemplate = new RestTemplate();
 
-//        try {
-//            // Send POST request
-//            ResponseEntity<String> response = restTemplate.exchange(
-//                    vendorApiUrl,
-//                    HttpMethod.POST,
-//                    requestEntity,
-//                    String.class
-//            );
-//
-//            // Check response status
-//            if (response.getStatusCode() == HttpStatus.CREATED) {
-//                return true; // Success
-//            } else {
-//                System.out.println("Unexpected response status: " + response.getStatusCode());
-//                return false; // Failed
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace(); // Handle exception as needed
-//            return false; // Failed
-//        }
-
         return true;
-    }
-
-    @Transactional
-    public Idea createDraftIdea(DraftIdeaRequest request) {
-        // Create Idea entity
-        Idea idea = new Idea();
-        idea.setTitle(request.getTitle());
-        idea.setDescription(request.getDescription());
-        idea.setUserId(1); // Replace this with actual user ID
-        idea.setCode(generateUniqueCode());
-
-        // Set initial status for the idea
-        IdeaStatus draftStatus = ideaStatusRepository.findByValue("Draft")
-                .orElseThrow(() -> new RuntimeException("Default Idea Status not found"));
-        idea.setIdeaStatus(draftStatus);
-
-        // Save Idea
-        idea = ideaRepository.save(idea);
-
-        // Create and save Dietary Restrictions if they are not empty
-        List<String> dietaryRestrictions = request.getDietaryRestrictions();
-        if (dietaryRestrictions != null && !dietaryRestrictions.isEmpty()) {
-            Idea finalIdea = idea;
-            List<DietaryRestriction> restrictions = dietaryRestrictions.stream()
-                    .filter(desc -> desc != null && !desc.trim().isEmpty())  // Filter out empty or null values
-                    .limit(3)  // Limit to 3 dietary restrictions
-                    .map(desc -> {
-                        DietaryRestriction restriction = new DietaryRestriction();
-                        restriction.setDescription(desc);
-                        restriction.setIdea(finalIdea);
-                        return restriction;
-                    })
-                    .collect(Collectors.toList());
-
-            if (!restrictions.isEmpty()) { // Save only if there are valid restrictions
-                dietaryRestrictionRepository.saveAll(restrictions);
-            }
-        }
-
-        // Create and save Interests if they are not empty
-        List<String> interestsList = request.getInterests();
-        if (interestsList != null && !interestsList.isEmpty()) {
-            Idea finalIdea1 = idea;
-            List<Interest> interests = interestsList.stream()
-                    .filter(desc -> desc != null && !desc.trim().isEmpty())  // Filter out empty or null values
-                    .limit(3)  // Limit to 3 interests
-                    .map(desc -> {
-                        Interest interest = new Interest();
-                        interest.setDescription(desc);
-                        interest.setIdea(finalIdea1);
-                        return interest;
-                    })
-                    .collect(Collectors.toList());
-
-            if (!interests.isEmpty()) { // Save only if there are valid interests
-                interestRepository.saveAll(interests);
-            }
-        }
-
-        return idea;
     }
 
     private String generateUniqueCode() {

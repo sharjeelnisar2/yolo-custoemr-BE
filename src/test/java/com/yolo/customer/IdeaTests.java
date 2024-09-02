@@ -114,5 +114,4 @@ public class IdeaTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("An error occurred"));
 
     }
-
 }

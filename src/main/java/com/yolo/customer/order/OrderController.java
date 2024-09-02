@@ -1,13 +1,16 @@
 package com.yolo.customer.order;
 
+import com.yolo.customer.order.dto.OrderRequest;
 import com.yolo.customer.utils.ErrorResponse;
 import com.yolo.customer.utils.ResponseObject;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Map;
@@ -87,7 +90,7 @@ public class OrderController {
             log.warn("Entity not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
-        } catch (IllegalArgumentException e) {
+        } catch (HttpClientErrorException.BadRequest e) {
             log.warn("Illegal argument: {}", e.getMessage());
             return ResponseEntity.badRequest().body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
         } catch (Exception ex) {

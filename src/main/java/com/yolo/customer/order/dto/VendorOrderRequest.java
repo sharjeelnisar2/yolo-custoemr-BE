@@ -1,4 +1,4 @@
-package com.yolo.customer.order;
+package com.yolo.customer.order.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,6 @@ public class VendorOrderRequest {
     @Setter
     public static class OrderDetails {
         private BigInteger total_price;
-        private String currency_code;
         private String order_code;
         private String customer_contact_number;
         private String customer_name;

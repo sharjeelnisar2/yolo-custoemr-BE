@@ -1,4 +1,4 @@
-package com.yolo.customer.order;
+package com.yolo.customer.order.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -3,10 +3,13 @@ package com.yolo.customer.order;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yolo.customer.enums.Order_Status;
+import com.yolo.customer.order.dto.OrderRequest;
+import com.yolo.customer.order.dto.VendorOrderRequest;
 import com.yolo.customer.order.orderItem.OrderItem;
 import com.yolo.customer.order.orderItem.OrderItemRepository;
 import com.yolo.customer.order.orderStatus.OrderStatus;
 import com.yolo.customer.order.orderStatus.OrderStatusRepository;
+import com.yolo.customer.order.orderStatus.OrderStatusService;
 import com.yolo.customer.recipe.Recipe;
 import com.yolo.customer.recipe.RecipeRepository;
 import com.yolo.customer.user.User;
@@ -35,6 +38,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final OrderItemRepository orderItemRepository;
+    private final OrderStatusService orderStatusService;
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
@@ -42,7 +46,7 @@ public class OrderService {
 
     public OrderService(OrderRepository orderRepository, OrderStatusRepository orderStatusRepository, OrderItemRepository orderItemRepository,
                         RecipeRepository recipeRepository, UserRepository userRepository,  UserProfileRepository userProfileRepository,
-                        AddressRepository addressRepository){
+                        AddressRepository addressRepository, OrderStatusService orderStatusService){
         this.orderRepository=orderRepository;
         this.orderStatusRepository=orderStatusRepository;
         this.orderItemRepository = orderItemRepository;
@@ -50,6 +54,7 @@ public class OrderService {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.addressRepository = addressRepository;
+        this.orderStatusService = orderStatusService;
     }
 
     public List<Order> findAll(Integer page, Integer size, String status) {
@@ -118,7 +123,7 @@ public class OrderService {
         User loggedInUser = userRepository.findByUsername(username).get();
 
         if(loggedInUser == null) {
-            throw new IllegalArgumentException("User with given username doesnot exists: " + username);
+            throw new EntityNotFoundException("User with given username doesnot exists: " + username);
         }
         Integer userId = loggedInUser.getId();
 
@@ -140,7 +145,6 @@ public class OrderService {
 
         Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode = groupOrderItemsByChefCode(orderDto);
 
-        // Create orders
         List<VendorOrderRequest.OrderDetails> vendorOrders = createOrdersAndPrepareVendorOrders(itemsByChefCode, userId);
 
         boolean vendorApiSuccess = callVendorApi(vendorOrders);
@@ -168,9 +172,9 @@ public class OrderService {
         return itemsByChefCode;
     }
 
+    private List<VendorOrderRequest.OrderDetails> createOrdersAndPrepareVendorOrders(
+            Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode, Integer userId) {
 
-    private List<VendorOrderRequest.OrderDetails> createOrdersAndPrepareVendorOrders(Map<String, List<OrderRequest.OrderItemDto>> itemsByChefCode,
-                                                                                     Integer userId) {
         List<VendorOrderRequest.OrderDetails> vendorOrders = new ArrayList<>();
 
         for (Map.Entry<String, List<OrderRequest.OrderItemDto>> entry : itemsByChefCode.entrySet()) {
@@ -178,13 +182,15 @@ public class OrderService {
             List<OrderRequest.OrderItemDto> items = entry.getValue();
 
             BigInteger totalPrice = calculateTotalPrice(items);
-
             String orderCode = generateUniqueCode();
 
             Order order = new Order();
             order.setCode(orderCode);
             order.setPrice(totalPrice);
-            order.setOrderStatusId(1); //PENDING ENUM
+            
+            Integer orderStatusId = orderStatusService.findStatusIdByValue("Placed");
+            order.setOrderStatusId(orderStatusId);
+
             order.setUserId(userId);
 
             Order savedOrder = orderRepository.save(order);
@@ -217,7 +223,6 @@ public class OrderService {
         UserProfile userProfile = userProfileRepository.findByUserId(uId).orElseThrow(() ->
                 new RuntimeException("User Profile not found for userId: " + uId));
 
-        orderDetails.setCurrency_code("USD");
         orderDetails.setOrder_code(orderCode);
         orderDetails.setCustomer_name(userProfile.getFirstName());
         orderDetails.setCustomer_contact_number(userProfile.getContactNumber());
@@ -225,7 +230,6 @@ public class OrderService {
         Address address = addressRepository.findById(userProfile.getAddressId()).orElseThrow(() ->
                 new RuntimeException("Address not found for addressId: " + userProfile.getAddressId()));
 
-        // Map the Address entity to VendorOrderRequest.Address
         VendorOrderRequest.OrderDetails.Address vendorAddress = new VendorOrderRequest.OrderDetails.Address();
         vendorAddress.setHouse(address.getHouse());
         vendorAddress.setStreet(address.getStreet());
@@ -246,13 +250,9 @@ public class OrderService {
                 })
                 .collect(Collectors.toList());
 
-        // Set the order items in order details
         orderDetails.setOrder_items(vendorOrderItems);
-
-        // Assign the orderDetails to the vendorOrderRequest
         vendorOrderRequest.setOrder(orderDetails);
 
-        // Return the complete VendorOrderRequest
         return vendorOrderRequest;
     }
 
@@ -267,7 +267,6 @@ public class OrderService {
                 String requestBody = objectMapper
                         .writerWithDefaultPrettyPrinter()
                         .writeValueAsString(vendorOrderRequest);
-                System.out.println(requestBody);
 
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
