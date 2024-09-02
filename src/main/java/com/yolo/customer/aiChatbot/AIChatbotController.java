@@ -22,7 +22,7 @@ public class AIChatbotController {
     @Autowired
     private AIChatbotService aiService;
 
-    @PreAuthorize("hasAuthority('CREATE_IDEA')")
+    @PreAuthorize("hasAuthority('ROLE_CREATE_IDEA')")
     @PostMapping("/ai/generate")
     public ResponseEntity<?> generate(@RequestBody AIChatbotRequest requestBody) {
         try {
@@ -40,7 +40,7 @@ public class AIChatbotController {
         }
     }
 
-    @PreAuthorize("hasAuthority('CREATE_IDEA')")
+    @PreAuthorize("hasAuthority('ROLE_CREATE_IDEA')")
     @GetMapping("/ai/max-limit")
     public ResponseEntity<?> getMaxLimit() {
         try {

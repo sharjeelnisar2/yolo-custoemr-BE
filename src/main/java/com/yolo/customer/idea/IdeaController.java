@@ -32,7 +32,7 @@ public class IdeaController {
         return ideaService.submitIdeaToVendor(ideaId, status);
     }
 
-    @PreAuthorize("hasAuthority('CREATE_IDEA')")
+    @PreAuthorize("hasAuthority('ROLE_CREATE_IDEA')")
     @PostMapping("/create-draft")
     public ResponseEntity<?> createDraftIdea(@RequestBody IdeaRequest request) {
         try {
@@ -49,7 +49,7 @@ public class IdeaController {
         }
     }
 
-    @PreAuthorize("hasAuthority('VIEW_ALL_IDEAS')")
+    @PreAuthorize("hasAuthority('ROLE_VIEW_ALL_IDEAS')")
     @GetMapping
     public ResponseEntity<?> getIdeas(
             @RequestParam(value = "status", required = false) Integer statusId,
