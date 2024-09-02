@@ -29,7 +29,7 @@ public class OrderService {
         this.orderStatusRepository = orderStatusRepository;
     }
 
-    public List<Order> findAll(Integer page, Integer size, String status) {
+    public Page<Order> findAll(Integer page, Integer size, String status) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = GetContextHolder.getUsernameFromAuthentication(authentication);
@@ -66,7 +66,7 @@ public class OrderService {
 
             pageOrders = orderRepository.findByOrderStatusIdAndUserIdOrderByCreatedAtDesc(statusObj.getId(), userId ,paging);
         }
-        return pageOrders.getContent();
+        return pageOrders;
     }
 
     public void updateOrderStatus(String orderCode, String status) {
