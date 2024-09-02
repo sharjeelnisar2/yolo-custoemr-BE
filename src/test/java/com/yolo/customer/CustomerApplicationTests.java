@@ -46,8 +46,7 @@ class CustomerApplicationTests {
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.data.orders", Matchers.hasSize(Matchers.greaterThan(0))));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orders", Matchers.hasSize(Matchers.greaterThan(0))));
 	}
 
 	@Order(2)
@@ -59,8 +58,7 @@ class CustomerApplicationTests {
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.data.orderItems", Matchers.notNullValue()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orderItems", Matchers.notNullValue()));
 	}
 
 	@Order(3)
@@ -75,6 +73,6 @@ class CustomerApplicationTests {
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.data.orders").value("DISPATCHED"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.orders.status").value("DISPATCHED"));
 	}
 }
