@@ -25,32 +25,14 @@ public class IdeaController {
     @Autowired
     private IdeaService ideaService;
 
-    @PreAuthorize("hasAuthority('SUBMIT_IDEA')")
+    @PreAuthorize("hasAuthority('ROLE_UPDATE_IDEA_STATUS')")
     @PatchMapping("/{ideaId}")
-    public ResponseEntity<?> submitIdeaToVendor(@PathVariable("ideaId") Integer ideaId, @RequestBody Map<String, String> requestBody) {
-        try {
-            String status = requestBody.get("status");
-            if (status == null || status.isEmpty()) {
-                return ResponseEntity.badRequest().body("Status is required");
-            }
-            ideaService.submitIdeaToVendor(ideaId, status);
-            return ResponseEntity.ok(new ResponseObject<>(true, "status", status));
-        } catch (EntityNotFoundException e) {
-            log.warn("Entity not found: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ErrorResponse.create(HttpStatus.NOT_FOUND, "Not Found", e.getMessage()));
-        } catch (IllegalArgumentException e) {
-            log.warn("Illegal argument: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(ErrorResponse.create(HttpStatus.BAD_REQUEST, "Bad Request", e.getMessage()));
-        } catch (Exception ex) {
-            log.error("Internal server error: {}", ex.getMessage(), ex);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
-        }
+    public ResponseEntity<Map<String, String>> submitIdeaToVendor(@PathVariable("ideaId") Integer ideaId, @RequestBody Map<String, String> requestBody) {
+        String status = requestBody.get("status");
+        return ideaService.submitIdeaToVendor(ideaId, status);
     }
 
-//    @PreAuthorize("hasAuthority('CREATE_IDEA')")
+    @PreAuthorize("hasAuthority('CREATE_IDEA')")
     @PostMapping("/create-draft")
     public ResponseEntity<?> createDraftIdea(@RequestBody IdeaRequest request) {
         try {

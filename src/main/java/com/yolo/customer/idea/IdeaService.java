@@ -27,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,20 +54,31 @@ public class IdeaService {
     private DietaryRestrictionRepository dietaryRestrictionRepository;
 
     public ResponseEntity<Map<String, String>> submitIdeaToVendor(Integer ideaId, String status) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+        User loggedInUser = userRepository.findByUsername(username).orElseThrow(() ->
+                new EntityNotFoundException("User with given username does not exist"));
+
         if (status == null || status.isEmpty()) {
-            throw new IllegalArgumentException("Status cannot be empty.");
+            throw new EntityNotFoundException("Status cannot be empty.");
         }
 
         Idea idea = ideaRepository.findById(ideaId)
-                .orElseThrow(() -> new RuntimeException("Idea with ID " + ideaId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Ideas not found"));
 
-        boolean vendorApiSuccess = callVendorApi(idea);
+        if (!idea.getUserId().equals(loggedInUser.getId())) {
+            throw new RuntimeException("Unauthorized to update idea.");
+        }
+
+        boolean vendorApiSuccess = callVendorApi(idea, username);
 
         if (vendorApiSuccess) {
-            IdeaStatus ideaStatus = ideaStatusRepository.findByValue(status)
-                    .orElseThrow(() -> new RuntimeException("Idea status with name " + status + " not found"));
+            Integer statusId = ideaStatusService.findStatusIdByName(status);
 
-            idea.setIdeaStatusId(ideaStatus); // Set IdeaStatus entity directly
+            IdeaStatus ideaStatus = new IdeaStatus();
+            ideaStatus.setId(statusId);
+            idea.setIdeaStatusId(ideaStatus);
             ideaRepository.save(idea);
 
             Map<String, String> response = new HashMap<>();
@@ -78,47 +90,37 @@ public class IdeaService {
         }
     }
 
-    private boolean callVendorApi(Idea idea) {
+
+    private boolean callVendorApi(Idea idea, String username) {
         IdeaDTO.IdeaDetails ideaDetails = new IdeaDTO.IdeaDetails();
-
-        String dummyUsername = "Ahmad";
-        ideaDetails.setCustomerName(dummyUsername);
-
-        // Get idea details
+        ideaDetails.setCustomer_name(username);
         ideaDetails.setTitle(idea.getTitle());
         ideaDetails.setDescription(idea.getDescription());
-        ideaDetails.setIdeaCode(idea.getCode());
+        ideaDetails.setIdea_code(idea.getCode());
 
-        // Get interests
         List<String> interests = interestRepository.findByIdeaId(idea.getId())
                 .stream()
                 .map(Interest::getDescription)
                 .collect(Collectors.toList());
         ideaDetails.setInterests(interests);
 
-        // Get dietary restrictions
         List<String> dietaryRestrictions = dietaryRestrictionRepository.findByIdeaId(idea.getId())
                 .stream()
                 .map(DietaryRestriction::getDescription)
                 .collect(Collectors.toList());
-        ideaDetails.setDietaryRestrictions(dietaryRestrictions);
+        ideaDetails.setDietary_restrictions(dietaryRestrictions);
 
         IdeaDTO ideaDTO = new IdeaDTO();
         ideaDTO.setIdea(ideaDetails);
 
-        // Prepare headers
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Print request body (for debugging)
-        try {
-            String requestBody = new ObjectMapper()
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(ideaDTO);
-            System.out.println("Request body: " + requestBody);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace(); // Handle exception as needed
-        }
+        HttpEntity<IdeaDTO> requestEntity = new HttpEntity<>(ideaDTO, headers);
+
+        String vendorApiUrl = "http://localhost:8081/api/v1/ideas";
+
+        RestTemplate restTemplate = new RestTemplate();
 
         return true;
     }
