@@ -52,17 +52,17 @@ public class AIChatbotService {
     }
 
     public int processPrompt(String interests, String dietaryRestrictions) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
-//
-//        User loggedInUser = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
-//
-//        Integer userId = loggedInUser.getId();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+
+        User loggedInUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
+
+        Integer userId = loggedInUser.getId();
 
         String currentPrompt = AIChatbotUtils.generatePrompt(interests, dietaryRestrictions);
 
-        List<String> prompts = userPrompts.getOrDefault(1, new ArrayList<>());
+        List<String> prompts = userPrompts.getOrDefault(userId, new ArrayList<>());
 
         long matchingPrompts = prompts.stream().filter(p -> p.equals(currentPrompt)).count();
 
@@ -71,7 +71,7 @@ public class AIChatbotService {
         }
 
         prompts.add(currentPrompt);
-        userPrompts.put(1, prompts);
+        userPrompts.put(userId, prompts);
 
         return maxLimit - (int) matchingPrompts;
     }

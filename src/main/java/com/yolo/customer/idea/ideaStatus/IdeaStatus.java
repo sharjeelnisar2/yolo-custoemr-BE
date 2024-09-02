@@ -19,7 +19,7 @@ public class IdeaStatus {
     @Column(name = "code", length = 16, nullable = false, unique = true)
     private String code;
 
-    @Column(name = "value", length = 16, nullable = false)
+    @Column(name = "\"value\"", length = 16, nullable = false)
     private String value;
 
     @Column(name = "is_active", nullable = false)

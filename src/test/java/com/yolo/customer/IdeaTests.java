@@ -26,16 +26,17 @@ class IdeaTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach
-    public void setUp() {
-        SecurityTestUtil.setJwtAuthenticationToken("admin",
-                Set.of("VIEW_ALL_IDEAS"),
-                Map.of("preferred_username", "admin")
-        );
-    }
+//    @BeforeEach
+//    public void setUp() {
+//        SecurityTestUtil.setJwtAuthenticationToken("admin",
+//                Set.of("VIEW_ALL_IDEAS"),
+//                Map.of("preferred_username", "admin")
+//        );
+//    }
 
     @Order(1)
     @Test
+    @WithMockUser(username = "admin", authorities = {"VIEW_ALL_IDEAS"})
     public void testGetIdeas() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/users/ideas")
                         .param("page", "1")
@@ -52,7 +53,7 @@ class IdeaTests {
 
     @Order(2)
     @Test
-    @WithMockUser(username = "notuser", authorities = {"CREATE_IDEA"})
+    @WithMockUser(username = "admin")
     public void testGetIdeas_Unauthorized() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/users/ideas")
                         .param("page", "1")

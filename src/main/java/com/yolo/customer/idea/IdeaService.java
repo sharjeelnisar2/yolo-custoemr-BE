@@ -125,13 +125,13 @@ public class IdeaService {
 
     @Transactional
     public Idea createDraftIdea(IdeaRequest request) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
-//
-//        User loggedInUser = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
-//
-//        Integer userId = loggedInUser.getId();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = GetContextHolder.getUsernameFromAuthentication(authentication);
+
+        User loggedInUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User with given username does not exists: " + username));
+
+        Integer userId = loggedInUser.getId();
 
         List<String> interestsList = request.getInterests();
         if (interestsList == null || interestsList.isEmpty()) {
@@ -141,7 +141,7 @@ public class IdeaService {
         Idea idea = new Idea();
         idea.setTitle(request.getTitle());
         idea.setDescription(request.getDescription());
-        idea.setUserId(1);
+        idea.setUserId(userId);
         idea.setCode(generateUniqueCode());
 
         IdeaStatus draftStatus = ideaStatusRepository.findByValue("Draft")
