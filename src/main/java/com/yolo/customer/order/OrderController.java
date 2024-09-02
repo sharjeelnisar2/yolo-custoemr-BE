@@ -1,6 +1,8 @@
 package com.yolo.customer.order;
 
+import com.yolo.customer.order.orderStatus.OrderStatus;
 import com.yolo.customer.order.dto.OrderRequest;
+import org.springframework.web.client.HttpClientErrorException;
 import com.yolo.customer.utils.ErrorResponse;
 import com.yolo.customer.utils.ResponseObject;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 import java.util.Map;
 
 @Slf4j
@@ -39,7 +39,7 @@ public class OrderController {
 
         try {
             orderService.updateOrderStatus(order_code, orderStatus);
-            return ResponseEntity.ok(new ResponseObject<>(true, "orders", orderStatus));
+            return ResponseEntity.ok(ResponseObject.createDataResponse("orders", Map.of("status", orderStatus)));
         } catch (EntityNotFoundException e) {
             log.warn("Entity not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -65,8 +65,17 @@ public class OrderController {
             @RequestParam(name = "status", required = false) String status) {
 
         try {
-            List<Order> orders = orderService.findAll(page, size, status);
-            return ResponseEntity.ok(new ResponseObject<>(true, "orders", orders));
+            Page<Order> orders = orderService.findAll(page, size, status);
+            Map<String, Object> response = ResponseObject.createPaginatedResponse(
+                    "orders",
+                    orders.getContent(),
+                    orders.getNumber(),
+                    orders.getSize(),
+                    orders.getTotalElements(),
+                    orders.getTotalPages()
+            );
+
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             log.warn("Illegal argument: {}", e.getMessage());
             return ResponseEntity.badRequest()

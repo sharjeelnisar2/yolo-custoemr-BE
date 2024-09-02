@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +27,16 @@ public class OrderItemController {
                                               @RequestParam(name = "size", defaultValue = "10") Integer size,
                                               @PathVariable("id") Integer orderID) {
         try {
-
-            List<Map<String, Object>> orderItemsWithRecipes = orderItemService.getOrderItemsWithRecipeByOrderId(orderID, page, size);
-            return ResponseEntity.ok(new ResponseObject<>(true, "orderItems", orderItemsWithRecipes));
-
+            Page<Map<String, Object>> orderItemsPage = orderItemService.getOrderItemsWithRecipeByOrderId(orderID, page, size);
+            Map<String, Object> response = ResponseObject.createPaginatedResponse(
+                    "orderItems",
+                    orderItemsPage.getContent(),
+                    orderItemsPage.getNumber(),
+                    orderItemsPage.getSize(),
+                    orderItemsPage.getTotalElements(),
+                    orderItemsPage.getTotalPages()
+            );
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ErrorResponse.create(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage()));
