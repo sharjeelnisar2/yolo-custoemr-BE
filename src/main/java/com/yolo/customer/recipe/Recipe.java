@@ -1,5 +1,6 @@
 package com.yolo.customer.recipe;
 
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name = "recipe")
+@Entity(name="recipe")
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,7 @@ public class Recipe {
     @Column(name = "serving_size")
     private Integer servingSize;
 
-    @Column(name = "chef_code", unique = true, length = 8)
+    @Column(name = "chef_code")
     private String chefCode;
 
     @Column(name = "chef_name", nullable = false)

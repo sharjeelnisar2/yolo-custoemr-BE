@@ -22,21 +22,21 @@ public class IdeaDTO {
     @Getter
     @Setter
     public static class IdeaDetails {
-        private String customerName;
+        private String customer_name;
         private String title;
         private String description;
-        private String ideaCode;
+        private String idea_code;
         private List<String> interests = new ArrayList<>();
-        private List<String> dietaryRestrictions = new ArrayList<>();
+        private List<String> dietary_restrictions = new ArrayList<>();
 
         public IdeaDetails(IdeaDetails other) {
             if (other != null) {
-                this.customerName = other.customerName;
+                this.customer_name = other.customer_name;
                 this.title = other.title;
                 this.description = other.description;
-                this.ideaCode = other.ideaCode;
+                this.idea_code = other.idea_code;
                 this.interests = new ArrayList<>(other.interests);
-                this.dietaryRestrictions = new ArrayList<>(other.dietaryRestrictions);
+                this.dietary_restrictions = new ArrayList<>(other.dietary_restrictions);
             }
         }
 
@@ -46,16 +46,5 @@ public class IdeaDTO {
             return new ArrayList<>(interests);
         }
 
-        public void setInterests(List<String> interests) {
-            this.interests = (interests == null) ? new ArrayList<>() : new ArrayList<>(interests);
-        }
-
-        public List<String> getDietaryRestrictions() {
-            return new ArrayList<>(dietaryRestrictions);
-        }
-
-        public void setDietaryRestrictions(List<String> dietaryRestrictions) {
-            this.dietaryRestrictions = (dietaryRestrictions == null) ? new ArrayList<>() : new ArrayList<>(dietaryRestrictions);
-        }
     }
 }
