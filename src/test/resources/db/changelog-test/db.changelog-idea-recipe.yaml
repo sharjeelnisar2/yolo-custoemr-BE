@@ -195,4 +195,3 @@ databaseChangeLog:
                   constraints:
                     defaultValue: CURRENT_TIMESTAMP
                     onUpdate: CURRENT_TIMESTAMP
-
