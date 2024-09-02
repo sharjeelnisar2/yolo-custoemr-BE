@@ -1,4 +1,4 @@
-package com.yolo.customer.idea.dto;
+package com.yolo.customer.idea;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,4 +16,6 @@ public class IdeaResponse {
     private List<String> dietaryRestrictions;
     private String ideaStatus;
     private LocalDateTime createdAt;
+
+
 }

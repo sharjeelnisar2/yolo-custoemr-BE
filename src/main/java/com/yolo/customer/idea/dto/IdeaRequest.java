@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class DraftIdeaRequest {
+public class IdeaRequest {
     private String title;
     private String description;
     private List<String> interests;

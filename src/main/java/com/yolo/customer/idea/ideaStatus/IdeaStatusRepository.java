@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface IdeaStatusRepository extends JpaRepository<IdeaStatus, Long> {
+public interface IdeaStatusRepository extends JpaRepository<IdeaStatus, Integer> {
     Optional<IdeaStatus> findByValue(String value);
 
 }

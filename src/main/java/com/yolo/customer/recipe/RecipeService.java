@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,12 +100,12 @@ public class RecipeService {
     @Transactional
     public Recipe createRecipe(RecipeRequest newRecipe) throws EntityNotFoundException {
 
-        Idea idea = ideaRepository.findByCode(newRecipe.getIdea_code());
-        if (idea == null) {
+        Optional<Idea> idea = ideaRepository.findByCode(newRecipe.getIdea_code());
+        if (idea.isEmpty()) {
             String errorMessage = String.format(ApiMessages.IDEA_NOT_FOUND.getMessage(), newRecipe.getIdea_code());
             throw new EntityNotFoundException(errorMessage);
         }
-        Integer ideaId = idea.getId();
+        Integer ideaId = idea.get().getId();
 
         Recipe recipe = new Recipe();
         recipe.setName(newRecipe.getRecipe_name());
