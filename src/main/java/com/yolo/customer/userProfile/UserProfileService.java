@@ -8,7 +8,6 @@ import com.yolo.customer.user.User;
 import com.yolo.customer.user.UserRepository;
 import com.yolo.customer.utils.GetContextHolder;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +24,6 @@ public class UserProfileService {
     private final CurrencyRepository currencyRepository;
     private final UserRepository userRepository;
 
-    // Constructor injection
     public UserProfileService(UserProfileRepository userProfileRepository,
                               AddressRepository addressRepository,
                               CurrencyRepository currencyRepository,
@@ -131,26 +129,21 @@ public class UserProfileService {
 
 
     public UserProfileRequestDTO getUserProfileDetails() {
-        // Fetch the authenticated user's username
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = GetContextHolder.getUsernameFromAuthentication(authentication);
 
-        // Retrieve the User entity based on the username
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // Retrieve the UserProfile based on the user's ID
         UserProfile userProfile = userProfileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found"));
 
-        // Retrieve the Address and Currency based on IDs in UserProfile
         Address address = addressRepository.findById(userProfile.getAddressId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
 
         Currency currency = currencyRepository.findById(userProfile.getCurrencyId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Currency not found"));
 
-        // Create and populate the DTO
         UserProfileRequestDTO dto = new UserProfileRequestDTO();
         dto.setFirst_name(userProfile.getFirstName());
         dto.setLast_name(userProfile.getLastName());

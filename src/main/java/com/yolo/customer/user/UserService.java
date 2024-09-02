@@ -71,7 +71,6 @@ public class UserService {
         Map<String, Object> clientRoles = (Map<String, Object>) resourceAccess.get("Yolo-Customer");
 
         if (clientRoles == null || clientRoles.get("roles") == null) {
-            // Handle the case where there are no roles
             return Collections.emptyList();
         }
 
